@@ -1,0 +1,93 @@
+@import url('https://fonts.googleapis.com/css2?family=Intel+One+Mono:wght@400;500;700&family=Inter:wght@400;500;600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-canvas: 255 252 244;
+  --color-ink-strong: 17 17 17;
+  --color-ink: 42 32 2;
+  --color-ink-muted: 58 43 5;
+  --color-border: 127 106 52;
+  --color-accent: 200 183 137;
+  --color-accent-strong: 64 47 1;
+  --color-accent-strong-hover: 47 34 0;
+  --color-accent-deep: 31 23 2;
+  --color-surface-1: 244 236 214;
+  --color-surface-2: 253 247 233;
+  --color-surface-3: 237 228 204;
+  --color-surface-4: 240 232 210;
+  --color-surface-5: 213 201 164;
+  --color-surface-6: 221 208 173;
+  --color-surface-7: 232 220 186;
+  --color-surface-8: 237 224 192;
+  --color-surface-9: 247 233 195;
+  --color-deep-shadow: 34 24 4;
+  --color-white: 255 255 255;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: rgb(var(--color-canvas));
+  color: rgb(var(--color-ink-strong));
+  overflow-x: hidden;
+}
+
+@keyframes adminFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes adminShimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes adminSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.admin-fade-up {
+  animation: adminFadeUp 0.45s ease both;
+}
+
+.admin-skeleton {
+  background: linear-gradient(
+    110deg,
+    rgb(var(--color-surface-3) / 0.35) 8%,
+    rgb(var(--color-white) / 0.7) 18%,
+    rgb(var(--color-surface-3) / 0.35) 33%
+  );
+  background-size: 200% 100%;
+  animation: adminShimmer 1.4s ease infinite;
+}
+
+.admin-spinner {
+  height: 14px;
+  width: 14px;
+  border-radius: 9999px;
+  border: 2px solid rgb(var(--color-ink) / 0.2);
+  border-top-color: rgb(var(--color-ink));
+  animation: adminSpin 0.8s linear infinite;
+}

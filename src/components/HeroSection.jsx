@@ -1,9 +1,8 @@
 import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ImageWithFallback from './ImageWithFallback'
-import teste_imagem from '../assets/teste_imagem.jpg'
 
-function HeroSection({ id, heroImg }) {
+function HeroSection({ id, heroImg, image }) {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
   const leftContentRef = useRef(null)
@@ -50,7 +49,7 @@ function HeroSection({ id, heroImg }) {
 
         <ImageWithFallback
           ref={rightImageRef}
-          src={teste_imagem}
+          src={image}
           alt="Artista pintando"
           fallbackSrc={heroImg}
           className="h-[300px] w-full object-cover object-[50%_30%] transition-transform duration-700 ease-out sm:h-[500px] sm:object-cover xl:h-[600px]"

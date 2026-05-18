@@ -6,6 +6,7 @@ import imagem1Img from './assets/imagem1.png'
 import imagem2Img from './assets/imagem2.png'
 import carrosselImg from './assets/carossel.png'
 import videoSrc from './assets/video_apresentacao.mp4'
+import teste_imagem from './assets/teste_imagem.jpg'
 import PortfolioHeader from './components/PortfolioHeader'
 import HeroSection from './components/HeroSection'
 import PresentationVideoSection from './components/PresentationVideoSection'
@@ -59,9 +60,8 @@ function HomeRoute({
   selectedArtwork,
   heroImgSrc,
   logoImgSrc,
-  imagem1,
-  imagem2,
   videoSource,
+  imageSrc,
   onArtworkSelect,
   onBack,
 }) {
@@ -90,7 +90,7 @@ function HomeRoute({
       <div className="px-2 py-4 sm:px-4 lg:px-5">
         <div className="mx-auto w-full max-w-[1480px]">
           <PortfolioHeader logoImg={logoImgSrc} />
-          <HeroSection id="sobre" imagem1Img={imagem1} imagem2Img={imagem2} heroImg={heroImgSrc} />
+          <HeroSection id="sobre" heroImg={heroImgSrc} image={imageSrc} />
           <ArtworksCarouselSection
             id="obras"
             artworks={artworks}
@@ -157,9 +157,7 @@ function App() {
               selectedArtwork={selectedArtwork}
               heroImgSrc={heroImg}
               logoImgSrc={logoImg}
-              imagem1={imagem1Img}
-              imagem2={imagem2Img}
-              carouselImg={carrosselImg}
+              imageSrc={teste_imagem}
               videoSource={videoSrc}
               onArtworkSelect={handleArtworkSelect}
               onBack={backToPortfolio}

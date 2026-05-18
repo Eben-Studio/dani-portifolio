@@ -2,6 +2,34 @@ import { forwardRef, useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ImageWithFallback from './ImageWithFallback'
 
+const CATEGORY_LABELS = {
+  residencial: 'Residencial',
+  corporativo: 'Corporativo',
+  collab: 'Collab',
+  exposicao: 'Exposição',
+}
+
+const ORIGIN_LABELS = {
+  direta: 'Direta',
+  arquiteta: 'Arquiteta',
+  escritorio: 'Escritório',
+}
+
+const normalizeValue = (value) => String(value || '').trim().toLowerCase()
+const formatCategory = (value) => CATEGORY_LABELS[normalizeValue(value)] || value
+const formatOrigin = (value) => ORIGIN_LABELS[normalizeValue(value)] || value
+const getPartnerLabel = (category, origin) => {
+  if (category === 'collab') return 'Marca'
+  if (category === 'exposicao') return 'Nome da exposição'
+  if (origin === 'arquiteta' || origin === 'escritorio') return 'Escritório/Arquiteta'
+  return 'Cliente/Projeto'
+}
+
+const buildWhatsappLink = (message) => {
+  const base = 'https://wa.me/5511991810285'
+  return `${base}?text=${encodeURIComponent(message)}`
+}
+
 const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
   { id, artwork, heroImg, pageMode = false, onBack },
   ref,
@@ -76,12 +104,45 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
     return null
   }
 
+  const categoryKey = normalizeValue(artwork.category)
+  const originKey = normalizeValue(artwork.commission_source)
+  const partnerName = String(artwork.partner_name || '').trim()
+  const saleStatusKey = normalizeValue(artwork.sale_status)
   const specs = [
     { label: 'Nome da obra', value: artwork.title },
     { label: 'Tamanho', value: artwork.size },
     { label: 'Técnica', value: artwork.technique },
     { label: 'Ano', value: artwork.year },
-  ]
+    { label: 'Categoria', value: formatCategory(artwork.category) },
+    { label: 'Origem da encomenda', value: formatOrigin(artwork.commission_source) },
+    ...(partnerName ? [{ label: getPartnerLabel(categoryKey, originKey), value: partnerName }] : []),
+  ].filter((spec) => spec.value)
+
+  const primaryCta = (() => {
+    const title = artwork.title ? ` "${artwork.title}"` : ''
+    switch (saleStatusKey) {
+      case 'disponivel':
+        return {
+          label: 'Falar no WhatsApp',
+          href: buildWhatsappLink(`Ola! Tenho interesse na obra${title}.`),
+          external: true,
+        }
+      case 'reservado':
+        return {
+          label: 'Entrar na lista',
+          href: buildWhatsappLink(`Ola! Quero entrar na lista de espera da obra${title}.`),
+          external: true,
+        }
+      case 'vendido':
+        return {
+          label: 'Encomendar uma obra',
+          href: buildWhatsappLink(`Ola! A obra${title} esta vendida, gostaria de encomendar uma similar.`),
+          external: true,
+        }
+      default:
+        return { label: 'Encomende a sua', href: '#contato' }
+    }
+  })()
 
   return (
     <section id={id} ref={setSectionElement} className="px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-14">
@@ -132,10 +193,11 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
                 {pageMode ? (
                   <>
                     <a
-                      href="#contato"
+                      href={primaryCta.href}
+                      {...(primaryCta.external ? { target: '_blank', rel: 'noreferrer' } : {})}
                       className="inline-flex items-center justify-center rounded-full bg-[#402F01] px-5 py-3 font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.16em] text-[#FFFCF4] transition duration-300 hover:translate-y-[-1px] hover:bg-[#2F2200]"
                     >
-                      Encomende a sua
+                      {primaryCta.label}
                     </a>
 
                     <button
@@ -149,10 +211,11 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
                 ) : (
                   <>
                     <a
-                      href="#contato"
+                      href={primaryCta.href}
+                      {...(primaryCta.external ? { target: '_blank', rel: 'noreferrer' } : {})}
                       className="inline-flex items-center justify-center rounded-full bg-[#402F01] px-5 py-3 font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.16em] text-[#FFFCF4] transition duration-300 hover:translate-y-[-1px] hover:bg-[#2F2200]"
                     >
-                      Encomende a sua
+                      {primaryCta.label}
                     </a>
                     <a
                       href="#obras"

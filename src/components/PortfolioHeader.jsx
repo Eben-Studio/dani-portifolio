@@ -36,6 +36,7 @@ function PortfolioHeader({ logoImg }) {
           <li><Link to="/sobre" className="hover:opacity-70">Sobre</Link></li>
           <li><Link to="/colecoes" className="hover:opacity-70">Coleções</Link></li>
           <li><Link to="/obras" className="hover:opacity-70">Obras</Link></li>
+          <li><Link to="/shop" className="hover:opacity-70">Shop</Link></li>
           <li><Link to="/#processo" className="hover:opacity-70">Processo</Link></li>
           <li><Link to="/#contato" className="hover:opacity-70">Contato</Link></li>
         </ul>

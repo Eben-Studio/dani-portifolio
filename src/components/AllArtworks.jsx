@@ -7,6 +7,21 @@ import CustomSelect from './CustomSelect'
 
 // `CustomSelect` moved to its own file; imported above
 
+const CATEGORY_LABELS = {
+  residencial: 'Residencial',
+  corporativo: 'Corporativo',
+  collab: 'Collab',
+  exposicao: 'Exposição',
+}
+
+const ORIGIN_LABELS = {
+  direta: 'Direta',
+  arquiteta: 'Arquiteta',
+  escritorio: 'Escritório',
+}
+
+const normalizeValue = (value) => String(value || '').trim().toLowerCase()
+
 // ── Artwork Card ─────────────────────────────────────────────────
 function ArtworkCard({ artwork, heroImg, index, onSelect }) {
   const imgRef = useRef(null)
@@ -88,6 +103,8 @@ function ArtworkCard({ artwork, heroImg, index, onSelect }) {
 function AllArtworks({ artworks = [], heroImg, logoImg, onArtworkSelect }) {
   const [yearFilter, setYearFilter] = useState('Todos')
   const [techniqueFilter, setTechniqueFilter] = useState('Todos')
+  const [categoryFilter, setCategoryFilter] = useState('Todos')
+  const [originFilter, setOriginFilter] = useState('Todos')
   const [sortBy, setSortBy] = useState('recente')
   const [gridKey, setGridKey] = useState(0)
 
@@ -106,23 +123,47 @@ function AllArtworks({ artworks = [], heroImg, logoImg, onArtworkSelect }) {
     return ['Todos', ...Array.from(new Set(values))]
   }, [artworks])
 
+  const categories = useMemo(() => {
+    const values = artworks.map((a) => normalizeValue(a.category)).filter((category) => category)
+    return ['Todos', ...Array.from(new Set(values))]
+  }, [artworks])
+
+  const origins = useMemo(() => {
+    const values = artworks.map((a) => normalizeValue(a.commission_source)).filter((origin) => origin)
+    return ['Todos', ...Array.from(new Set(values))]
+  }, [artworks])
+
   const filtered = useMemo(() => {
     let list = artworks.filter((a) => {
       if (yearFilter !== 'Todos' && a.year !== yearFilter) return false
       if (techniqueFilter !== 'Todos' && a.technique !== techniqueFilter) return false
+      if (categoryFilter !== 'Todos' && normalizeValue(a.category) !== categoryFilter) return false
+      if (originFilter !== 'Todos' && normalizeValue(a.commission_source) !== originFilter) return false
       return true
     })
     if (sortBy === 'recente') list = [...list].sort((a, b) => b.year - a.year)
     if (sortBy === 'antigo') list = [...list].sort((a, b) => a.year - b.year)
     return list
-  }, [artworks, yearFilter, techniqueFilter, sortBy])
+  }, [artworks, yearFilter, techniqueFilter, categoryFilter, originFilter, sortBy])
 
-  const hasActiveFilters = yearFilter !== 'Todos' || techniqueFilter !== 'Todos'
+  const hasActiveFilters =
+    yearFilter !== 'Todos' ||
+    techniqueFilter !== 'Todos' ||
+    categoryFilter !== 'Todos' ||
+    originFilter !== 'Todos'
 
   const applyYear      = (v) => { setYearFilter(v);      setGridKey((k) => k + 1) }
   const applyTechnique = (v) => { setTechniqueFilter(v); setGridKey((k) => k + 1) }
+  const applyCategory  = (v) => { setCategoryFilter(v);  setGridKey((k) => k + 1) }
+  const applyOrigin    = (v) => { setOriginFilter(v);    setGridKey((k) => k + 1) }
   const applySort      = (v) => { setSortBy(v);          setGridKey((k) => k + 1) }
-  const clearFilters   = ()  => { setYearFilter('Todos'); setTechniqueFilter('Todos'); setGridKey((k) => k + 1) }
+  const clearFilters   = ()  => {
+    setYearFilter('Todos')
+    setTechniqueFilter('Todos')
+    setCategoryFilter('Todos')
+    setOriginFilter('Todos')
+    setGridKey((k) => k + 1)
+  }
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -193,6 +234,24 @@ function AllArtworks({ artworks = [], heroImg, logoImg, onArtworkSelect }) {
               options={techniques}
               onChange={applyTechnique}
               active={techniqueFilter !== 'Todos'}
+            />
+
+            <CustomSelect
+              label="Categoria"
+              value={categoryFilter}
+              options={categories}
+              onChange={applyCategory}
+              active={categoryFilter !== 'Todos'}
+              displayMap={CATEGORY_LABELS}
+            />
+
+            <CustomSelect
+              label="Origem"
+              value={originFilter}
+              options={origins}
+              onChange={applyOrigin}
+              active={originFilter !== 'Todos'}
+              displayMap={ORIGIN_LABELS}
             />
 
             {/* Clear */}

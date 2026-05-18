@@ -8,13 +8,13 @@ import carrosselImg from './assets/carossel.png'
 import videoSrc from './assets/video_apresentacao.mp4'
 import PortfolioHeader from './components/PortfolioHeader'
 import HeroSection from './components/HeroSection'
-import ArtworksAlternatingSection from './components/ArtworksAlternatingSection'
 import PresentationVideoSection from './components/PresentationVideoSection'
 import ArtworksCarouselSection from './components/ArtworksCarouselSection'
 import ArtworkDetailSection from './components/ArtworkDetailSection'
 import Footer from './components/Footer'
 import AboutPage from './components/AboutPage'
 import AllArtworks from './components/AllArtworks'
+import ShopPage from './components/ShopPage'
 import Collections from './components/Collections'
 import AuthPage from './components/AuthPage'
 import AdminDashboard from './components/AdminDashboard'
@@ -61,7 +61,6 @@ function HomeRoute({
   logoImgSrc,
   imagem1,
   imagem2,
-  carouselImg,
   videoSource,
   onArtworkSelect,
   onBack,
@@ -100,7 +99,7 @@ function HomeRoute({
           />
           <div className="mt-4 flex justify-end px-4 sm:px-6" />
           <PresentationVideoSection id="processo" videoSrc={videoSource} />
-          <ArtworksAlternatingSection id="atelier" artworkImg={carouselImg} heroImg={heroImgSrc} />
+          {/* <ArtworksAlternatingSection id="atelier" artworkImg={carouselImg} heroImg={heroImgSrc} /> */}
         </div>
       </div>
       <Footer id="contato" />
@@ -183,6 +182,17 @@ function App() {
           path="/obras"
           element={
             <AllArtworks
+              artworks={artworks}
+              heroImg={heroImg}
+              logoImg={logoImg}
+              onArtworkSelect={handleArtworkSelect}
+            />
+          }
+        />
+        <Route
+          path="/shop"
+          element={
+            <ShopPage
               artworks={artworks}
               heroImg={heroImg}
               logoImg={logoImg}

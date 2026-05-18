@@ -19,6 +19,10 @@ const emptyArtworkForm = {
   technique: '',
   size: '',
   description: '',
+  category: 'residencial',
+  commission_source: '',
+  partner_name: '',
+  sale_status: '',
   image_url: '',
   collection_id: '',
 }
@@ -124,7 +128,7 @@ function CharCount({ value, max }) {
 
 // ── Progress pill ─────────────────────────────────────────────────────────
 function ProgressPill({ form }) {
-  const keys = ['title', 'year', 'technique', 'size', 'description']
+  const keys = ['title', 'year', 'technique', 'size', 'description', 'category', 'commission_source']
   const filled = keys.filter((k) => String(form[k] || '').trim().length > 0).length
   const hasImage = Boolean(form.image_url) || false
   const total = keys.length + 1
@@ -323,17 +327,71 @@ function AdminArtworkFormPage({ logoImg }) {
     ...collections.map((c) => ({ value: String(c.id), label: c.name })),
   ], [collections])
 
-  const baseForm = useMemo(() => ({
-    title: artworkToEdit?.title || '',
-    year: artworkToEdit?.year ? String(artworkToEdit.year) : '',
-    technique: artworkToEdit?.technique || '',
-    size: artworkToEdit?.size || '',
-    description: artworkToEdit?.description || '',
-    image_url: artworkToEdit?.image_url || '',
-    collection_id: artworkToEdit?.collection_id ? String(artworkToEdit.collection_id) : '',
-  }), [artworkToEdit])
+  const categoryOptions = useMemo(() => [
+    { value: 'residencial', label: 'Residencial' },
+    { value: 'corporativo', label: 'Corporativo' },
+    { value: 'collab', label: 'Collab' },
+    { value: 'exposicao', label: 'Exposição' },
+  ], [])
+
+  const commissionOptions = useMemo(() => [
+    { value: '', label: 'Sem origem' },
+    { value: 'direta', label: 'Direta' },
+    { value: 'arquiteta', label: 'Arquiteta' },
+    { value: 'escritorio', label: 'Escritório' },
+  ], [])
+
+  const saleStatusOptions = useMemo(() => [
+    { value: '', label: 'Não exibir no shop' },
+    { value: 'disponivel', label: 'Disponível' },
+    { value: 'reservado', label: 'Reservado' },
+    { value: 'vendido', label: 'Vendido' },
+  ], [])
+
+  const baseForm = useMemo(() => {
+    if (!artworkToEdit) return { ...emptyArtworkForm }
+    return {
+      ...emptyArtworkForm,
+      title: artworkToEdit?.title || '',
+      year: artworkToEdit?.year ? String(artworkToEdit.year) : '',
+      technique: artworkToEdit?.technique || '',
+      size: artworkToEdit?.size || '',
+      description: artworkToEdit?.description || '',
+      category: artworkToEdit?.category ?? '',
+      commission_source: artworkToEdit?.commission_source ?? '',
+      partner_name: artworkToEdit?.partner_name ?? '',
+      sale_status: artworkToEdit?.sale_status ?? '',
+      image_url: artworkToEdit?.image_url || '',
+      collection_id: artworkToEdit?.collection_id ? String(artworkToEdit.collection_id) : '',
+    }
+  }, [artworkToEdit])
 
   const artworkForm = useMemo(() => ({ ...baseForm, ...draftValues }), [baseForm, draftValues])
+
+  const normalizedCategory = String(artworkForm.category || '').toLowerCase()
+  const normalizedOrigin = String(artworkForm.commission_source || '').toLowerCase()
+  const showPartnerField =
+    normalizedCategory === 'collab' ||
+    normalizedCategory === 'exposicao' ||
+    normalizedOrigin === 'direta' ||
+    normalizedOrigin === 'arquiteta' ||
+    normalizedOrigin === 'escritorio'
+  const partnerFieldLabel = (() => {
+    if (normalizedCategory === 'collab') return 'Marca'
+    if (normalizedCategory === 'exposicao') return 'Nome da exposição'
+    if (normalizedOrigin === 'arquiteta' || normalizedOrigin === 'escritorio') {
+      return 'Escritório/Arquiteta'
+    }
+    return 'Cliente/Projeto'
+  })()
+  const partnerFieldPlaceholder = (() => {
+    if (normalizedCategory === 'collab') return 'Ex: Marca parceira'
+    if (normalizedCategory === 'exposicao') return 'Ex: Exposição coletiva'
+    if (normalizedOrigin === 'arquiteta' || normalizedOrigin === 'escritorio') {
+      return 'Ex: Escritório XYZ'
+    }
+    return 'Ex: Cliente/Projeto'
+  })()
 
   const previewUrl = useMemo(() => {
     if (artworkFile) return URL.createObjectURL(artworkFile)
@@ -493,8 +551,68 @@ function AdminArtworkFormPage({ logoImg }) {
                       </div>
                     </AnimatedField>
 
-                    {/* Dimensões */}
+                    {/* Categoria + Origem */}
                     <AnimatedField index={2}>
+                      <div className="grid gap-3 sm:grid-cols-2">
+                        <div className="grid gap-2">
+                          <Label>
+                            Categoria
+                            <ValidDot show={Boolean(artworkForm.category)} />
+                          </Label>
+                          <Select
+                            value={artworkForm.category}
+                            onChange={handleChange('category')}
+                            options={categoryOptions}
+                            className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                          />
+                        </div>
+                        <div className="grid gap-2">
+                          <Label>
+                            Origem da encomenda
+                            <ValidDot show={Boolean(artworkForm.commission_source)} />
+                          </Label>
+                          <Select
+                            value={artworkForm.commission_source}
+                            onChange={handleChange('commission_source')}
+                            options={commissionOptions}
+                            className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                          />
+                        </div>
+                      </div>
+                    </AnimatedField>
+
+                    {/* Status no shop */}
+                    <AnimatedField index={3}>
+                      <div className="grid gap-2">
+                        <Label>
+                          Status no shop
+                          <ValidDot show={Boolean(artworkForm.sale_status)} />
+                        </Label>
+                        <Select
+                          value={artworkForm.sale_status}
+                          onChange={handleChange('sale_status')}
+                          options={saleStatusOptions}
+                          className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                        />
+                      </div>
+                    </AnimatedField>
+
+                    {showPartnerField && (
+                      <AnimatedField index={4}>
+                        <div className="grid gap-2">
+                          <Label>{partnerFieldLabel}</Label>
+                          <Input
+                            value={artworkForm.partner_name}
+                            onChange={handleChange('partner_name')}
+                            placeholder={partnerFieldPlaceholder}
+                            className="transition-[border-color,box-shadow,background] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                          />
+                        </div>
+                      </AnimatedField>
+                    )}
+
+                    {/* Dimensões */}
+                    <AnimatedField index={5}>
                       <div className="grid gap-2">
                         <Label>
                           Dimensões
@@ -510,7 +628,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Descrição */}
-                    <AnimatedField index={3}>
+                    <AnimatedField index={6}>
                       <div className="grid gap-2">
                         <Label>Descrição</Label>
                         <Textarea
@@ -526,7 +644,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* URL da imagem */}
-                    <AnimatedField index={4}>
+                    <AnimatedField index={7}>
                       <div className="grid gap-2">
                         <Label>URL da imagem</Label>
                         <Input
@@ -547,7 +665,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Coleção */}
-                    <AnimatedField index={5}>
+                    <AnimatedField index={8}>
                       <div className="grid gap-2">
                         <Label>Coleção</Label>
                         <Select
@@ -560,7 +678,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Drop zone */}
-                    <AnimatedField index={6}>
+                    <AnimatedField index={9}>
                       <DropZone
                         fileInputRef={fileInputRef}
                         artworkFile={artworkFile}

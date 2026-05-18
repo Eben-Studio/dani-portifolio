@@ -16,6 +16,30 @@ import Pagination from './ui/pagination'
 const PAGE_SIZE = 10
 const STORAGE_BUCKET = 'daniela'
 
+const CATEGORY_LABELS = {
+  residencial: 'Residencial',
+  corporativo: 'Corporativo',
+  collab: 'Collab',
+  exposicao: 'Exposição',
+}
+
+const ORIGIN_LABELS = {
+  direta: 'Direta',
+  arquiteta: 'Arquiteta',
+  escritorio: 'Escritório',
+}
+
+const SALE_STATUS_LABELS = {
+  disponivel: 'Disponível',
+  reservado: 'Reservado',
+  vendido: 'Vendido',
+}
+
+const normalizeValue = (value) => String(value || '').trim().toLowerCase()
+const formatCategory = (value) => CATEGORY_LABELS[normalizeValue(value)] || value
+const formatOrigin = (value) => ORIGIN_LABELS[normalizeValue(value)] || value
+const formatSaleStatus = (value) => SALE_STATUS_LABELS[normalizeValue(value)] || value
+
 const artworkSortOptions = [
   { value: 'year-desc', label: 'Ano (desc)' },
   { value: 'year-asc', label: 'Ano (asc)' },
@@ -153,6 +177,10 @@ function SummaryCard({ label, value, index }) {
 // ── Artwork row ───────────────────────────────────────────────────────────
 function ArtworkRow({ artwork, index, collectionLabel, isSaving, onEdit, onDelete }) {
   const [imgLoaded, setImgLoaded] = useState(false)
+  const categoryLabel = formatCategory(artwork.category) || 'Sem categoria'
+  const originLabel = formatOrigin(artwork.commission_source) || 'Sem origem'
+  const partnerLabel = artwork.partner_name || 'Sem parceiro'
+  const saleStatusLabel = formatSaleStatus(artwork.sale_status) || 'Sem status'
 
   return (
     <div
@@ -190,6 +218,10 @@ function ArtworkRow({ artwork, index, collectionLabel, isSaving, onEdit, onDelet
               ['Ano', artwork.year || 'Sem ano'],
               ['Técnica', artwork.technique || 'Sem técnica'],
               ['Dimensões', artwork.size || 'Sem dimensões'],
+              ['Categoria', categoryLabel],
+              ['Origem', originLabel],
+              ['Parceiro', partnerLabel],
+              ['Status shop', saleStatusLabel],
               ['Coleção', collectionLabel || 'Sem coleção'],
               ['Descrição', artwork.description || 'Sem descrição'],
             ].map(([lbl, val]) => (

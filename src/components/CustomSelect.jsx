@@ -3,7 +3,7 @@ import { createPortal } from 'react-dom'
 import gsap from 'gsap'
 
 // ── Dropdown Portal — escapa de qualquer overflow/clip ───────────
-function DropdownPortal({ triggerRef, dropRef, options, value, onChange, setOpen }) {
+function DropdownPortal({ triggerRef, dropRef, options, value, onChange, setOpen, displayMap }) {
   const [pos, setPos] = useState({ top: 0, left: 0, width: 0 })
 
   useLayoutEffect(() => {
@@ -39,7 +39,9 @@ function DropdownPortal({ triggerRef, dropRef, options, value, onChange, setOpen
               : 'text-ink/70 hover:bg-surface-4 hover:text-ink',
           ].join(' ')}
         >
-          <span className="font-['Intel_One_Mono'] text-[10.5px] uppercase tracking-[0.14em]">{opt}</span>
+          <span className="font-['Intel_One_Mono'] text-[10.5px] uppercase tracking-[0.14em]">
+            {displayMap?.[opt] || opt}
+          </span>
           {value === opt && (
             <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
               <path d="M1 4l3 3 5-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
@@ -53,7 +55,7 @@ function DropdownPortal({ triggerRef, dropRef, options, value, onChange, setOpen
 }
 
 // ── Custom Select ───────────────────────────────────────────────
-export default function CustomSelect({ label, value, options, onChange, active }) {
+export default function CustomSelect({ label, value, options, onChange, active, displayMap = {} }) {
   const [open, setOpen] = useState(false)
   const ref = useRef(null)
   const dropRef = useRef(null)
@@ -84,7 +86,7 @@ export default function CustomSelect({ label, value, options, onChange, active }
           {label}
         </span>
         <span className={`font-['Intel_One_Mono'] text-[11px] uppercase tracking-[0.12em] ${active ? 'text-accent' : 'text-ink/75'}`}>
-          {value === 'Todos' ? 'Todos' : value}
+          {value === 'Todos' ? 'Todos' : (displayMap[value] || value)}
         </span>
         <svg
           width="8" height="5" viewBox="0 0 8 5" fill="none"
@@ -95,7 +97,17 @@ export default function CustomSelect({ label, value, options, onChange, active }
       </button>
 
       {/* Dropdown — posicionado via fixed para escapar de qualquer overflow/clip */}
-      {open && <DropdownPortal triggerRef={ref} dropRef={dropRef} options={options} value={value} onChange={onChange} setOpen={setOpen} />}
+      {open && (
+        <DropdownPortal
+          triggerRef={ref}
+          dropRef={dropRef}
+          options={options}
+          value={value}
+          onChange={onChange}
+          setOpen={setOpen}
+          displayMap={displayMap}
+        />
+      )}
     </div>
   )
 }

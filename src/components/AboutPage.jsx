@@ -153,7 +153,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
   }, [])
 
   // Split headline into spans for per-word animation
-  const headline = 'Pintura como presença e memória_'
+  const headline = 'A Arte que te encontra'
   const words = headline.split(' ')
 
   return (
@@ -173,7 +173,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
                   <span className="inline-flex items-center gap-2 rounded-full border border-[#7F6A34]/22 bg-[#402F01]/10 px-3.5 py-1.5">
                     <span className="h-1.5 w-1.5 rounded-full bg-[#402F01]/60" />
                     <span className="font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.22em] text-[#2A2002]/70">
-                      Sobre Daniela
+                      A Artista
                     </span>
                   </span>
                   <span className="font-['Inter'] text-[11px] text-[#2A2002]/40">São Paulo · 1984</span>
@@ -233,7 +233,6 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
               </div>
             </div>
 
-            {/* Right: image */}
             <div
               ref={imageRef}
               className="relative h-[360px] overflow-hidden rounded-[28px] border border-[#7F6A34]/12 bg-[#D5C9A4] shadow-[0_24px_56px_rgba(64,47,1,0.13)] sm:h-[480px] lg:h-auto lg:min-h-[520px]"
@@ -250,7 +249,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
               <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full border border-[#C8B789]/30 bg-[#C8B789]/50 px-3 py-1.5 backdrop-blur-sm">
                 <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#2A2002]/70" />
                 <span className="font-['Intel_One_Mono'] text-[9.5px] uppercase tracking-[0.16em] text-[#2A2002]">
-                  Daniela Kamaki
+                  Daniela Kamachi
                 </span>
               </div>
 

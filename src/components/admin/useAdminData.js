@@ -133,6 +133,10 @@ export function useAdminData({ enabled } = {}) {
           technique: form.technique?.trim() || '',
           size: form.size?.trim() || '',
           description: form.description?.trim() || '',
+          category: form.category?.trim().toLowerCase() || null,
+          commission_source: form.commission_source?.trim().toLowerCase() || null,
+          partner_name: form.partner_name?.trim() || null,
+          sale_status: form.sale_status?.trim().toLowerCase() || null,
           image_url: imageUrl || null,
           collection_id: parseIdentifier(form.collection_id),
         }

@@ -28,6 +28,7 @@ function PortfolioHeader({ logoImg }) {
         className="h-20 w-56 sm:h-16"
         fallbackClassName="font-['Intel_One_Mono'] text-[44px] leading-none text-ink"
         fallbackText="Daniela Kamaki"
+        onClick={() => window.location.href = '/#top'}
       />
 
       <nav className="w-full sm:w-auto">

@@ -1,5 +1,6 @@
 import React from 'react'
 import { useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 
@@ -9,6 +10,24 @@ function Footer({ id }) {
   const footerRef = useRef(null)
   const leftSectionRef = useRef(null)
   const rightSectionRef = useRef(null)
+
+  const serviceRows = [
+    {
+      service: { label: 'Obras originais', href: '/obras' },
+      prazo: 'Sob consulta',
+      canal: 'Instagram',
+    },
+    {
+      service: { label: 'Encomendas' },
+      prazo: '',
+      canal: 'E-mail',
+    },
+    {
+      service: { label: 'Obras Disponíveis', href: '/shop' },
+      prazo: '',
+      canal: '',
+    },
+  ]
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -51,10 +70,10 @@ function Footer({ id }) {
           <div ref={leftSectionRef} className="flex flex-col items-start justify-between">
             <div>
               <h2 className="font-['Intel_One_Mono'] text-[28px] leading-[1.2] tracking-[0.01em] text-[#2A2002] sm:text-[32px]">
-                Comissões e obras originais
+                Obras originais e sob encomenda_
               </h2>
               <p className="mt-2 font-['Intel_One_Mono'] text-[12px] leading-[1.5] tracking-[0.03em] text-[#3A2B05] opacity-75">
-                A artista recebe encomendas para interiores, coleções privadas e peças especiais feitas sob medida.
+               Solicite um orçamento.
               </p>
             </div>
 
@@ -70,12 +89,12 @@ function Footer({ id }) {
                 </svg>
               </a>
               <a
-                href="#"
-                aria-label="LinkedIn"
+                href="https://substack.com/@danielakamachi?r=87nzw6&utm_medium=ios&utm_source=stories&shareImageVariant=image"
+                aria-label="Substack"
                 className="flex h-10 w-10 items-center justify-center text-[#2A2002] transition duration-300 hover:opacity-70"
               >
                 <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.475-2.236-1.986-2.236-1.081 0-1.722.722-2.004 1.418-.103.249-.129.597-.129.946v5.441h-3.554s.05-8.736 0-9.637h3.554v1.384c.43-.664 1.199-1.608 2.928-1.608 2.136 0 3.745 1.393 3.745 4.385v5.476zM5.337 9.433c-1.144 0-1.915-.758-1.915-1.704 0-.948.771-1.704 1.956-1.704 1.184 0 1.914.756 1.938 1.704 0 .946-.754 1.704-1.979 1.704zm1.946 11.019H3.391V9.816h3.892v10.636zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.225 0z" />
+                  <path d="M22.539 8.242H1.46V5.406h21.08v2.836zM1.46 10.812V24L12 18.11 22.54 24V10.812H1.46zM22.54 0H1.46v2.836h21.08V0z" />
                 </svg>
               </a>
             </div>
@@ -86,7 +105,7 @@ function Footer({ id }) {
             {/* Column Headers */}
             <div className="pb-2">
               <span className="font-['Intel_One_Mono'] text-[11px] uppercase tracking-[0.08em] text-[#3A2B05]">
-                Serviço
+                Serviços
               </span>
             </div>
             <div className="pb-2">
@@ -101,25 +120,30 @@ function Footer({ id }) {
             </div>
 
             {/* Data Rows */}
-            {[
-              ['Obras originais', 'Sob consulta', 'Instagram'],
-              ['Encomendas', '2 a 4 semanas', 'Contato direto'],
-              ['Estudos de cor', 'A combinar', 'E-mail / DM'],
-            ].map((row) => (
-              <React.Fragment key={row}>
+            {serviceRows.map((row) => (
+              <React.Fragment key={row.service.label}>
+                <div className="py-2">
+                  {row.service.href ? (
+                    <Link
+                      to={row.service.href}
+                      className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05] transition duration-300 hover:opacity-70"
+                    >
+                      {row.service.label}
+                    </Link>
+                  ) : (
+                    <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
+                      {row.service.label}
+                    </span>
+                  )}
+                </div>
                 <div className="py-2">
                   <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
-                    {row[0]}
+                    {row.prazo}
                   </span>
                 </div>
                 <div className="py-2">
                   <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
-                    {row[1]}
-                  </span>
-                </div>
-                <div className="py-2">
-                  <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
-                    {row[2]}
+                    {row.canal}
                   </span>
                 </div>
               </React.Fragment>
@@ -130,7 +154,7 @@ function Footer({ id }) {
         {/* Bottom divider */}
         <div className="mt-8 border-t border-[#3A2B05]/20 pt-4 sm:mt-10 lg:mt-12">
           <p className="font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.1em] text-[#3A2B05] opacity-60">
-            © 2026 Daniela Kamaki. Todos os direitos reservados.
+            © 2026 Daniela Kamachi. Todos os direitos reservados.
           </p>
         </div>
       </div>

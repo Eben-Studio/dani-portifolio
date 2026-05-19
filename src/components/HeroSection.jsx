@@ -43,7 +43,7 @@ function HeroSection({ id, heroImg, image }) {
       <div className="flex flex-col">
         <div className="flex flex-col justify-between font-['Intel_One_Mono'] text-ink">
           <h1 ref={titleRef} className="mb-7 max-w-[700px] text-left text-[28px] leading-[1.08] tracking-[0.01em] sm:text-[38px] lg:text-[44px]">
-          A Arte que te <br/>encontra.
+          Arte que te <br/>encontra_
           </h1>
         </div>
 
@@ -53,7 +53,7 @@ function HeroSection({ id, heroImg, image }) {
           alt="Artista pintando"
           fallbackSrc={heroImg}
           className="h-[300px] w-full object-cover object-[50%_30%] transition-transform duration-700 ease-out sm:h-[500px] sm:object-cover xl:h-[600px]"
-          fallbackClassName="h-[300px] w-full sm:h-[500px] xl:h-[540px]"
+          fallbackClassName="h-[300px] w-full brightness-90 sm:h-[500px] xl:h-[540px]"
         />
       </div>
     </section>

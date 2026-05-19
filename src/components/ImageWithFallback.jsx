@@ -8,6 +8,7 @@ const ImageWithFallback = forwardRef(function ImageWithFallback(
     fallbackClassName,
     fallbackText = '',
     fallbackSrc = '',
+    onClick = null
   },
   ref,
 ) {
@@ -32,6 +33,7 @@ const ImageWithFallback = forwardRef(function ImageWithFallback(
       src={currentSrc}
       alt={alt}
       className={className}
+      onClick={onClick}
       onError={() => {
         if (!failedPrimary) {
           setFailedPrimary(true)

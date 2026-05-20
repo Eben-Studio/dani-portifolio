@@ -66,15 +66,21 @@ export function usePortfolioData({ enabled = true } = {}) {
     }
   }, [enabled, loadData])
 
-  const normalizedArtworks = useMemo(
-    () =>
-      artworks.map((artwork) => ({
+  const normalizedArtworks = useMemo(() => {
+    const collectionById = new Map(
+      collections.map((collection) => [String(collection.id), { name: collection.name, slug: collection.slug }]),
+    )
+    return artworks.map((artwork) => {
+      const collection = collectionById.get(String(artwork.collection_id))
+      return {
         ...artwork,
         year: artwork.year ? String(artwork.year) : '',
         image: resolveArtworkImage(artwork.image_url),
-      })),
-    [artworks]
-  )
+        collection_name: artwork.collection_name || collection?.name || '',
+        collection_slug: artwork.collection_slug || collection?.slug || '',
+      }
+    })
+  }, [artworks, collections])
 
   return {
     collections,

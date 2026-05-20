@@ -1,4 +1,5 @@
 import { forwardRef, useEffect, useRef } from 'react'
+import { Link } from 'react-router-dom'
 import gsap from 'gsap'
 import ImageWithFallback from './ImageWithFallback'
 
@@ -9,15 +10,8 @@ const CATEGORY_LABELS = {
   exposicao: 'Exposição',
 }
 
-const ORIGIN_LABELS = {
-  direta: 'Direta',
-  arquiteta: 'Arquiteta',
-  escritorio: 'Escritório',
-}
-
 const normalizeValue = (value) => String(value || '').trim().toLowerCase()
 const formatCategory = (value) => CATEGORY_LABELS[normalizeValue(value)] || value
-const formatOrigin = (value) => ORIGIN_LABELS[normalizeValue(value)] || value
 const getPartnerLabel = (category, origin) => {
   if (category === 'collab') return 'Marca'
   if (category === 'exposicao') return 'Nome da exposição'
@@ -107,14 +101,17 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
   const categoryKey = normalizeValue(artwork.category)
   const originKey = normalizeValue(artwork.commission_source)
   const partnerName = String(artwork.partner_name || '').trim()
+  const collectionLabel = String(artwork.collection_name || '').trim()
+  const collectionSlug = String(artwork.collection_slug || '').trim()
+  const collectionHref = collectionSlug ? `/colecoes?colecao=${collectionSlug}` : ''
   const saleStatusKey = normalizeValue(artwork.sale_status)
   const specs = [
-    { label: 'Nome da obra', value: artwork.title },
+    { label: 'Titulo', value: artwork.title },
     { label: 'Tamanho', value: artwork.size },
     { label: 'Técnica', value: artwork.technique },
     { label: 'Ano', value: artwork.year },
     { label: 'Categoria', value: formatCategory(artwork.category) },
-    { label: 'Origem da encomenda', value: formatOrigin(artwork.commission_source) },
+    { label: 'Coleção', value: collectionLabel, href: collectionHref },
     ...(partnerName ? [{ label: getPartnerLabel(categoryKey, originKey), value: partnerName }] : []),
   ].filter((spec) => spec.value)
 
@@ -182,9 +179,20 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
                     <p className="font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] text-[#7F6A34] sm:text-[11px]">
                       {spec.label}
                     </p>
-                    <p className="mt-2 font-['Intel_One_Mono'] text-[16px] leading-[1.25] text-[#2A2002] sm:text-[18px]">
-                      {spec.value}
-                    </p>
+                    {spec.href ? (
+                      <p className="mt-2 font-['Intel_One_Mono'] text-[16px] leading-[1.25] text-[#2A2002] sm:text-[18px]">
+                        <Link
+                          to={spec.href}
+                          className="transition duration-300 hover:opacity-70"
+                        >
+                          {spec.value}
+                        </Link>
+                      </p>
+                    ) : (
+                      <p className="mt-2 font-['Intel_One_Mono'] text-[16px] leading-[1.25] text-[#2A2002] sm:text-[18px]">
+                        {spec.value}
+                      </p>
+                    )}
                   </div>
                 ))}
               </div>

@@ -11,21 +11,26 @@ function Footer({ id }) {
   const leftSectionRef = useRef(null)
   const rightSectionRef = useRef(null)
 
+  const isExternalHref = (href) => /^https?:\/\//.test(href)
+
   const serviceRows = [
     {
-      service: { label: 'Obras originais', href: '/obras' },
-      prazo: 'Sob consulta',
-      canal: 'Instagram',
+      service: { label: 'Obras originais', href: '/shop' },
+      canal: {
+        label: 'Instagram',
+        href: 'https://www.instagram.com/danielakamachistudio/',
+      },
     },
     {
-      service: { label: 'Encomendas' },
-      prazo: '',
-      canal: 'E-mail',
+      service: {
+        label: 'Encomendas',
+        href: 'https://www.instagram.com/danielakamachistudio/',
+      },
+      canal: { label: 'E-mail' },
     },
     {
-      service: { label: 'Obras Disponíveis', href: '/shop' },
-      prazo: '',
-      canal: '',
+      service: { label: 'Cartões', href: '/shop' },
+      canal: { label: '' },
     },
   ]
 
@@ -101,7 +106,7 @@ function Footer({ id }) {
           </div>
 
           {/* Right Section - Table */}
-          <div ref={rightSectionRef} className="grid grid-cols-3 gap-1 sm:gap-1">
+          <div ref={rightSectionRef} className="grid grid-cols-2 gap-1 sm:gap-1">
             {/* Column Headers */}
             <div className="pb-2">
               <span className="font-['Intel_One_Mono'] text-[11px] uppercase tracking-[0.08em] text-[#3A2B05]">
@@ -110,12 +115,7 @@ function Footer({ id }) {
             </div>
             <div className="pb-2">
               <span className="font-['Intel_One_Mono'] text-[11px] uppercase tracking-[0.08em] text-[#3A2B05]">
-                Prazo
-              </span>
-            </div>
-            <div className="pb-2">
-              <span className="font-['Intel_One_Mono'] text-[11px] uppercase tracking-[0.08em] text-[#3A2B05]">
-                Canal
+                Contato
               </span>
             </div>
 
@@ -124,12 +124,21 @@ function Footer({ id }) {
               <React.Fragment key={row.service.label}>
                 <div className="py-2">
                   {row.service.href ? (
-                    <Link
-                      to={row.service.href}
-                      className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05] transition duration-300 hover:opacity-70"
-                    >
-                      {row.service.label}
-                    </Link>
+                    isExternalHref(row.service.href) ? (
+                      <a
+                        href={row.service.href}
+                        className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05] transition duration-300 hover:opacity-70"
+                      >
+                        {row.service.label}
+                      </a>
+                    ) : (
+                      <Link
+                        to={row.service.href}
+                        className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05] transition duration-300 hover:opacity-70"
+                      >
+                        {row.service.label}
+                      </Link>
+                    )
                   ) : (
                     <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
                       {row.service.label}
@@ -137,14 +146,18 @@ function Footer({ id }) {
                   )}
                 </div>
                 <div className="py-2">
-                  <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
-                    {row.prazo}
-                  </span>
-                </div>
-                <div className="py-2">
-                  <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
-                    {row.canal}
-                  </span>
+                  {row.canal?.href ? (
+                    <a
+                      href={row.canal.href}
+                      className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05] transition duration-300 hover:opacity-70"
+                    >
+                      {row.canal.label}
+                    </a>
+                  ) : (
+                    <span className="font-['Intel_One_Mono'] text-[11px] text-[#3A2B05]">
+                      {row.canal?.label}
+                    </span>
+                  )}
                 </div>
               </React.Fragment>
             ))}

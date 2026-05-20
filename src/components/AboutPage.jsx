@@ -5,7 +5,25 @@ import PortfolioHeader from './PortfolioHeader'
 import ImageWithFallback from './ImageWithFallback'
 import Footer from './Footer'
 
+
+
+
 const exhibitions = [
+  {
+    year: '2023',
+    title: 'MOSTRA COLETIVA',
+    description: 'Exposição no espaço Home & Design do Cidade Jardim Shopping com a Galeria Art Lab. São Paulo, SP.',
+  },
+  {
+    year: '2022',
+    title: 'CENTENÁRIO DA SEMANA DE ARTE MODERNA',
+    description: 'Participação na exposição coletiva da Galeria Art Lab. São Paulo, SP.',
+  },
+  {
+    year: '2020',
+    title: 'EXPOSIÇÃO INDIVIDUAL',
+    description: 'Primeira exposição individual na Casa Tegra em parceria com Helinho Calfat. São Paulo, SP.',
+  },
   {
     year: '2019',
     title: 'A OUTRA FEIRA VI',
@@ -153,7 +171,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
   }, [])
 
   // Split headline into spans for per-word animation
-  const headline = 'A Arte que te encontra'
+  const headline = 'Arte que te encontra'
   const words = headline.split(' ')
 
   return (
@@ -198,10 +216,10 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
                 {/* Bio paragraphs */}
                 <div ref={bodyRef} className="flex flex-col gap-3">
                   <p className="max-w-[520px] font-['Inter'] text-[15px] leading-[1.85] text-[#3A2B05] sm:text-[16px]">
-                    Nascida em São Paulo em 1984, Daniela é uma artista que se dedica à pintura como forma de conexão, utilizando principalmente tinta acrílica sobre tela. Sua inspiração está intimamente ligada a elementos da natureza, recordações especiais e lugares que tiveram grande influência em sua vida.
+                    Nascida em São Paulo, Daniela é uma artista que se dedica à pintura como forma de conexão, utilizando principalmente tinta acrílica sobre tela. Sua inspiração está intimamente ligada a elementos da natureza, recordações especiais e lugares que tiveram grande influência em sua vida.
                   </p>
                   <p className="max-w-[520px] font-['Inter'] text-[15px] leading-[1.85] text-[#3A2B05] sm:text-[16px]">
-                    Contraste de cores vibrantes e tons pastel, traços marcantes e sobreposição de camadas são características do processo gradativo que ela imprime em seu trabalho. Forte e ao mesmo tempo delicado, o propósito de sua arte é trazer beleza e alegria — pinturas que contam histórias, acessam emoções e despertam algo novo.
+                    O contraste entre cores vibrantes e tons pastel, os traços marcantes e a sobreposição de camadas são características do processo gradativo que imprime em seu trabalho. Forte e, ao mesmo tempo, delicada, sua arte tem como propósito trazer beleza e alegria — pinturas que contam histórias, acessam emoções e despertam algo novo.
                   </p>
                 </div>
               </div>
@@ -211,7 +229,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
                 ref={quoteRef}
                 className="max-w-[460px] border-l-2 border-[#7F6A34]/35 pl-5 font-['Inter'] text-[13.5px] italic leading-[1.8] text-[#3A2B05]/80"
               >
-                Acrílica sobre tela, camadas sutis e uma paleta entre tons vibrantes e pastel definem uma obra íntima, serena e viva.
+                Pinturas que cultivam beleza, conexão e esperança.
               </blockquote>
 
               {/* CTA */}
@@ -259,8 +277,7 @@ function AboutPage({ logoImg, heroImg, imagem1Img, onHome }) {
                   Essência
                 </p>
                 <p className="mt-1 font-['Inter'] text-[13.5px] leading-[1.6] text-[#2A2002]">
-                  Forte, delicada e muito conectada à memória afetiva.
-                </p>
+                  Fé, coragem, disciplina e prática.                </p>
               </div>
             </div>
           </section>

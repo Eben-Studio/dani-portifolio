@@ -35,10 +35,7 @@ function PortfolioHeader({ logoImg }) {
         <ul className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-[15px] font-medium font-['Inter'] text-ink-strong sm:justify-end sm:gap-x-8">
           <li><Link to="/#top" className="hover:opacity-70">Home</Link></li>
           <li><Link to="/sobre" className="hover:opacity-70">Sobre</Link></li>
-          <li><Link to="/colecoes" className="hover:opacity-70">Coleções</Link></li>
           <li><Link to="/obras" className="hover:opacity-70">Obras</Link></li>
-          <li><Link to="/shop" className="hover:opacity-70">Shop</Link></li>
-          <li><Link to="/#processo" className="hover:opacity-70">Processo</Link></li>
           <li><Link to="/#contato" className="hover:opacity-70">Contato</Link></li>
         </ul>
       </nav>

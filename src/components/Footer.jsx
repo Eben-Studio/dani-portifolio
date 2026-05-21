@@ -15,7 +15,7 @@ function Footer({ id }) {
 
   const serviceRows = [
     {
-      service: { label: 'Obras originais', href: '/shop' },
+      service: { label: 'Obras originais', href: '/portifolio' },
       canal: {
         label: 'Instagram',
         href: 'https://www.instagram.com/danielakamachistudio/',
@@ -29,7 +29,7 @@ function Footer({ id }) {
       canal: { label: 'E-mail', href: 'mailto:contatodanielakamachi@gmail.com'},
     },
     {
-      service: { label: 'Cartões', href: '/shop' },
+      service: { label: 'Cartões', href: '/portifolio' },
       canal: { label: '' },
     },
   ]

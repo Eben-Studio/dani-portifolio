@@ -13,9 +13,9 @@ import ArtworksCarouselSection from './components/ArtworksCarouselSection'
 import ArtworkDetailSection from './components/ArtworkDetailSection'
 import Footer from './components/Footer'
 import AboutPage from './components/AboutPage'
-import AllArtworks from './components/AllArtworks'
+import PortfolioPage from './components/PortfolioPage'
 import ShopPage from './components/ShopPage'
-import Collections from './components/Collections'
+import CollectionDetailPage from './components/CollectionDetailPage'
 import AuthPage from './components/AuthPage'
 import AdminDashboard from './components/AdminDashboard'
 import AdminArtworkFormPage from './components/admin/AdminArtworkFormPage'
@@ -175,17 +175,7 @@ function App() {
             />
           }
         />
-        <Route
-          path="/obras"
-          element={
-            <AllArtworks
-              artworks={artworks}
-              heroImg={heroImg}
-              logoImg={logoImg}
-              onArtworkSelect={handleArtworkSelect}
-            />
-          }
-        />
+        <Route path="/obras" element={<Navigate to="/portifolio" replace />} />
         <Route
           path="/shop"
           element={
@@ -198,9 +188,9 @@ function App() {
           }
         />
         <Route
-          path="/colecoes"
+          path="/portifolio"
           element={
-            <Collections
+            <PortfolioPage
               collections={collections}
               artworks={artworks}
               heroImg={heroImg}
@@ -208,6 +198,22 @@ function App() {
               onArtworkSelect={handleArtworkSelect}
             />
           }
+        />
+        <Route
+          path="/colecao/:slug"
+          element={
+            <CollectionDetailPage
+              collections={collections}
+              artworks={artworks}
+              heroImg={heroImg}
+              logoImg={logoImg}
+              onArtworkSelect={handleArtworkSelect}
+            />
+          }
+        />
+        <Route
+          path="/colecoes"
+          element={<Navigate to="/portifolio" replace />}
         />
         <Route path="/auth" element={<AuthPage logoImg={logoImg} />} />
         <Route path="/admin" element={<AdminDashboard logoImg={logoImg} defaultTab="artworks" />} />

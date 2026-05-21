@@ -370,7 +370,7 @@ function AdminCollectionFormPage({ logoImg }) {
                             className="font-mono text-[11px] text-blue-600"
                             style={{ animation: 'slideIn 0.2s ease-out both' }}
                           >
-                            /colecoes/{collectionForm.slug}
+                            /colecao/{collectionForm.slug}
                           </p>
                         )}
                       </div>

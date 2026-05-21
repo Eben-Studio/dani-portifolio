@@ -165,10 +165,10 @@ function ArtworksCarouselSection({ id, artworks = [], heroImg, onArtworkSelect }
       <div className="mx-auto max-w-[1500px] px-4 sm:px-6 mt-6">
         <div className="flex items-center justify-end">
           <Link
-            to="/obras"
+            to="/portifolio"
             className="inline-flex items-center justify-center rounded-full bg-[#D5C9A4] px-5 py-3 font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.16em] text-[#402F01] transition duration-300 hover:bg-[#2F2200] hover:text-[#FFFCF4]"
           >
-            Ver todas as obras
+            Ver portfólio completo
           </Link>
         </div>
       </div>

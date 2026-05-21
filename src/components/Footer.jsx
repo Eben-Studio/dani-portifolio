@@ -26,7 +26,7 @@ function Footer({ id }) {
         label: 'Encomendas',
         href: 'https://www.instagram.com/danielakamachistudio/',
       },
-      canal: { label: 'E-mail' },
+      canal: { label: 'E-mail', href: 'mailto:contatodanielakamachi@gmail.com'},
     },
     {
       service: { label: 'Cartões', href: '/shop' },

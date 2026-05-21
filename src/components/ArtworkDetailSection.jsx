@@ -10,6 +10,18 @@ const CATEGORY_LABELS = {
   exposicao: 'Exposição',
 }
 
+const SALE_STATUS_LABELS = {
+  disponivel: 'Disponível',
+  reservado: 'Reservado',
+  vendido: 'Vendida',
+}
+
+const SALE_STATUS_STYLES = {
+  disponivel: 'border-[#2A2002]/20 bg-[#C8B789]/25 text-[#2A2002]',
+  reservado: 'border-[#7F6A34]/25 bg-[#E8DCBA]/45 text-[#7F6A34]',
+  vendido: 'border-[#2A2002]/15 bg-[#FFFCF4]/50 text-[#2A2002]/55',
+}
+
 const normalizeValue = (value) => String(value || '').trim().toLowerCase()
 const formatCategory = (value) => CATEGORY_LABELS[normalizeValue(value)] || value
 const getPartnerLabel = (category, origin) => {
@@ -103,8 +115,10 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
   const partnerName = String(artwork.partner_name || '').trim()
   const collectionLabel = String(artwork.collection_name || '').trim()
   const collectionSlug = String(artwork.collection_slug || '').trim()
-  const collectionHref = collectionSlug ? `/colecoes?colecao=${collectionSlug}` : ''
+  const collectionHref = collectionSlug ? `/colecao/${encodeURIComponent(collectionSlug)}` : ''
   const saleStatusKey = normalizeValue(artwork.sale_status)
+  const saleStatusLabel = SALE_STATUS_LABELS[saleStatusKey] || String(artwork.sale_status || '').trim()
+  const saleStatusStyle = SALE_STATUS_STYLES[saleStatusKey] || 'border-[#2A2002]/15 bg-[#FFFCF4]/50 text-[#2A2002]/55'
   const specs = [
     { label: 'Titulo', value: artwork.title },
     { label: 'Tamanho', value: artwork.size },
@@ -150,9 +164,16 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
 
           <div className="relative grid gap-8 lg:grid-cols-[1fr_0.95fr] lg:items-center">
             <div ref={contentRef} className="space-y-5 text-[#2A2002]">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[#2A2002]/30 bg-[#FFFCF4]/70 px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] backdrop-blur-md sm:text-[11px]">
-                <span className="h-2 w-2 rounded-full bg-[#2A2002]" />
-                Obra em destaque
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex items-center gap-2 rounded-full border border-[#2A2002]/30 bg-[#FFFCF4]/70 px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] backdrop-blur-md sm:text-[11px]">
+                  <span className="h-2 w-2 rounded-full bg-[#2A2002]" />
+                  Obra em destaque
+                </div>
+                {saleStatusLabel && (
+                  <span className={`inline-flex items-center rounded-full border px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] sm:text-[11px] ${saleStatusStyle}`}>
+                    {saleStatusLabel}
+                  </span>
+                )}
               </div>
 
               <div>

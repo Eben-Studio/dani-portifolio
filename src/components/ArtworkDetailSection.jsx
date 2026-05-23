@@ -112,46 +112,66 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
 
   const categoryKey = normalizeValue(artwork.category)
   const originKey = normalizeValue(artwork.commission_source)
+  const typeKey = normalizeValue(artwork.artwork_type)
+  const isCartao = typeKey === 'cartao'
   const partnerName = String(artwork.partner_name || '').trim()
   const collectionLabel = String(artwork.collection_name || '').trim()
   const collectionSlug = String(artwork.collection_slug || '').trim()
   const collectionHref = collectionSlug ? `/colecao/${encodeURIComponent(collectionSlug)}` : ''
+  const highlightLabel = isCartao ? 'Cartão em destaque' : 'Obra em destaque'
+  const relatedLink = isCartao
+    ? { href: '/cartoes', label: 'Ver outros cartões' }
+    : { href: '#obras', label: 'Ver outras obras' }
+  const interestPhrase = isCartao ? 'no cartão' : 'na obra'
+  const waitlistPhrase = isCartao ? 'do cartão' : 'da obra'
+  const soldSubject = isCartao ? 'O cartão' : 'A obra'
+  const soldAdjective = isCartao ? 'vendido' : 'vendida'
+  const orderLabel = isCartao ? 'Encomendar um cartão' : 'Encomendar uma obra'
+  const orderItem = isCartao ? 'um cartão' : 'uma obra'
+  const imageBadgeText = isCartao ? (artwork.size || 'Cartão') : artwork.technique
   const saleStatusKey = normalizeValue(artwork.sale_status)
   const saleStatusLabel = SALE_STATUS_LABELS[saleStatusKey] || String(artwork.sale_status || '').trim()
   const saleStatusStyle = SALE_STATUS_STYLES[saleStatusKey] || 'border-[#2A2002]/15 bg-[#FFFCF4]/50 text-[#2A2002]/55'
-  const specs = [
-    { label: 'Titulo', value: artwork.title },
-    { label: 'Tamanho', value: artwork.size },
-    { label: 'Técnica', value: artwork.technique },
-    { label: 'Ano', value: artwork.year },
-    { label: 'Categoria', value: formatCategory(artwork.category) },
-    { label: 'Coleção', value: collectionLabel, href: collectionHref },
-    ...(partnerName ? [{ label: getPartnerLabel(categoryKey, originKey), value: partnerName }] : []),
-  ].filter((spec) => spec.value)
+  const specs = (isCartao
+    ? [
+      { label: 'Tamanho', value: artwork.size },
+      { label: 'Ano', value: artwork.year },
+      { label: 'Coleção', value: collectionLabel, href: collectionHref },
+      ...(partnerName ? [{ label: 'Cliente', value: partnerName }] : []),
+    ]
+    : [
+      { label: 'Titulo', value: artwork.title },
+      { label: 'Tamanho', value: artwork.size },
+      { label: 'Técnica', value: artwork.technique },
+      { label: 'Ano', value: artwork.year },
+      { label: 'Categoria', value: formatCategory(artwork.category) },
+      { label: 'Coleção', value: collectionLabel, href: collectionHref },
+      ...(partnerName ? [{ label: getPartnerLabel(categoryKey, originKey), value: partnerName }] : []),
+    ]
+  ).filter((spec) => spec.value)
 
   const primaryCta = (() => {
-    const title = artwork.title ? ` "${artwork.title}"` : ''
     switch (saleStatusKey) {
       case 'disponivel':
         return {
           label: 'Falar no WhatsApp',
-          href: buildWhatsappLink(`Ola! Tenho interesse na obra${title}.`),
+          href: "https://www.instagram.com/danielakamachistudio/",
           external: true,
         }
       case 'reservado':
         return {
           label: 'Entrar na lista',
-          href: buildWhatsappLink(`Ola! Quero entrar na lista de espera da obra${title}.`),
+          href: "https://www.instagram.com/danielakamachistudio/",
           external: true,
         }
       case 'vendido':
         return {
-          label: 'Encomendar uma obra',
-          href: buildWhatsappLink(`Ola! A obra${title} esta vendida, gostaria de encomendar uma similar.`),
+          label: orderLabel,
+          href: "https://www.instagram.com/danielakamachistudio/",
           external: true,
         }
       default:
-        return { label: 'Encomende a sua', href: '#contato' }
+        return { label: 'Encomende a sua', href: "https://www.instagram.com/danielakamachistudio/" }
     }
   })()
 
@@ -167,7 +187,7 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
               <div className="flex flex-wrap items-center gap-2">
                 <div className="inline-flex items-center gap-2 rounded-full border border-[#2A2002]/30 bg-[#FFFCF4]/70 px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] backdrop-blur-md sm:text-[11px]">
                   <span className="h-2 w-2 rounded-full bg-[#2A2002]" />
-                  Obra em destaque
+                  {highlightLabel}
                 </div>
                 {saleStatusLabel && (
                   <span className={`inline-flex items-center rounded-full border px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] sm:text-[11px] ${saleStatusStyle}`}>
@@ -247,10 +267,10 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
                       {primaryCta.label}
                     </a>
                     <a
-                      href="#obras"
+                      href={relatedLink.href}
                       className="inline-flex items-center justify-center rounded-full border border-[#7F6A34]/30 bg-[#FFFCF4]/60 px-5 py-3 font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.16em] text-[#2A2002] transition duration-300 hover:bg-[#FFFCF4]"
                     >
-                      Ver outras obras
+                      {relatedLink.label}
                     </a>
                   </>
                 )}
@@ -275,7 +295,7 @@ const ArtworkDetailSection = forwardRef(function ArtworkDetailSection(
                 </div>
 
                 <div className="absolute right-4 bottom-4 rounded-full border border-[#FFFCF4]/25 bg-[#FFFCF4]/15 px-3 py-1 font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.16em] text-[#FFFCF4] backdrop-blur-md sm:right-5 sm:bottom-5 sm:text-[11px]">
-                  {artwork.technique}
+                  {imageBadgeText}
                 </div>
               </div>
             </div>

@@ -76,6 +76,7 @@ export function usePortfolioData({ enabled = true } = {}) {
         ...artwork,
         year: artwork.year ? String(artwork.year) : '',
         image: resolveArtworkImage(artwork.image_url),
+        artwork_type: artwork.artwork_type || 'obra',
         collection_name: artwork.collection_name || collection?.name || '',
         collection_slug: artwork.collection_slug || collection?.slug || '',
       }

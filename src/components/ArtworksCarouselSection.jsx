@@ -6,11 +6,18 @@ import ImageWithFallback from './ImageWithFallback'
 
 gsap.registerPlugin(ScrollTrigger)
 
+const normalizeValue = (value) => String(value || '').trim().toLowerCase()
+
 function ArtworksCarouselSection({ id, artworks = [], heroImg, onArtworkSelect }) {
   const sectionRef = useRef(null)
   const containerRef = useRef(null)
   const prevBtnRef = useRef(null)
   const nextBtnRef = useRef(null)
+
+  const carouselArtworks = useMemo(
+    () => artworks.filter((artwork) => normalizeValue(artwork.artwork_type) !== 'cartao'),
+    [artworks],
+  )
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -38,27 +45,27 @@ function ArtworksCarouselSection({ id, artworks = [], heroImg, onArtworkSelect }
   }, [])
 
   const loopedSlides = useMemo(() => {
-    if (artworks.length < 2) {
-      return artworks
+    if (carouselArtworks.length < 2) {
+      return carouselArtworks
     }
 
-    const tail = artworks.slice(-2)
-    const head = artworks.slice(0, 2)
+    const tail = carouselArtworks.slice(-2)
+    const head = carouselArtworks.slice(0, 2)
 
-    return [...tail, ...artworks, ...head]
-  }, [artworks])
+    return [...tail, ...carouselArtworks, ...head]
+  }, [carouselArtworks])
 
-  const baseIndex = artworks.length < 2 ? 0 : 4
+  const baseIndex = carouselArtworks.length < 2 ? 0 : 4
   const [currentIndex, setCurrentIndex] = useState(baseIndex)
   const [withTransition, setWithTransition] = useState(true)
 
   useEffect(() => {
-    const nextIndex = artworks.length < 2 ? 0 : 4
+    const nextIndex = carouselArtworks.length < 2 ? 0 : 4
     setWithTransition(false)
     setCurrentIndex(nextIndex)
     const resetId = requestAnimationFrame(() => setWithTransition(true))
     return () => cancelAnimationFrame(resetId)
-  }, [artworks.length])
+  }, [carouselArtworks.length])
 
   const prev = () => {
     setWithTransition(true)
@@ -71,17 +78,17 @@ function ArtworksCarouselSection({ id, artworks = [], heroImg, onArtworkSelect }
   }
 
   const handleTransitionEnd = () => {
-    if (artworks.length < 2) {
+    if (carouselArtworks.length < 2) {
       return
     }
 
     if (currentIndex === 0) {
       setWithTransition(false)
-      setCurrentIndex(artworks.length)
+      setCurrentIndex(carouselArtworks.length)
       return
     }
 
-    if (currentIndex === artworks.length + 2) {
+    if (currentIndex === carouselArtworks.length + 2) {
       setWithTransition(false)
       setCurrentIndex(2)
     }

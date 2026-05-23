@@ -19,6 +19,7 @@ const emptyArtworkForm = {
   technique: '',
   size: '',
   description: '',
+  artwork_type: 'obra',
   category: 'residencial',
   commission_source: '',
   partner_name: '',
@@ -128,7 +129,11 @@ function CharCount({ value, max }) {
 
 // ── Progress pill ─────────────────────────────────────────────────────────
 function ProgressPill({ form }) {
-  const keys = ['title', 'year', 'technique', 'size', 'description', 'category', 'commission_source']
+  const typeKey = String(form.artwork_type || 'obra').toLowerCase()
+  const isCartao = typeKey === 'cartao'
+  const keys = isCartao
+    ? ['title', 'year', 'size', 'description', 'partner_name', 'collection_id']
+    : ['title', 'year', 'technique', 'size', 'description', 'category', 'commission_source']
   const filled = keys.filter((k) => String(form[k] || '').trim().length > 0).length
   const hasImage = Boolean(form.image_url) || false
   const total = keys.length + 1
@@ -220,6 +225,12 @@ function DropZone({ fileInputRef, artworkFile, onDrop, onSelect }) {
 // ── Preview card ──────────────────────────────────────────────────────────
 function PreviewCard({ previewUrl, artworkForm, isEditing }) {
   const [imgLoaded, setImgLoaded] = useState(false)
+  const typeKey = String(artworkForm.artwork_type || 'obra').toLowerCase()
+  const isCartao = typeKey === 'cartao'
+  const metaSecondary = isCartao ? (artworkForm.size || 'Tamanho') : (artworkForm.technique || 'Técnica')
+  const statusLabel = isEditing
+    ? (isCartao ? 'Editando cartão existente' : 'Editando obra existente')
+    : (isCartao ? 'Criando novo cartão' : 'Criando nova obra')
 
   useEffect(() => { setImgLoaded(false) }, [previewUrl])
 
@@ -273,7 +284,7 @@ function PreviewCard({ previewUrl, artworkForm, isEditing }) {
             </p>
             <p className="mt-1 font-['Inter'] text-[11px] text-ink-muted/60">
               {artworkForm.year ? `${artworkForm.year} · ` : ''}
-              {artworkForm.technique || 'Técnica'}
+              {metaSecondary}
             </p>
           </div>
         </div>
@@ -284,7 +295,7 @@ function PreviewCard({ previewUrl, artworkForm, isEditing }) {
           </p>
           <p className="mt-1 font-['Inter'] text-[12px] text-ink/70">
             <StatusDot />
-            {isEditing ? 'Editando obra existente' : 'Criando nova obra'}
+            {statusLabel}
           </p>
         </div>
 
@@ -334,6 +345,11 @@ function AdminArtworkFormPage({ logoImg }) {
     { value: 'exposicao', label: 'Exposição' },
   ], [])
 
+  const typeOptions = useMemo(() => [
+    { value: 'obra', label: 'Obra' },
+    { value: 'cartao', label: 'Cartão' },
+  ], [])
+
   const commissionOptions = useMemo(() => [
     { value: '', label: 'Sem origem' },
     { value: 'direta', label: 'Direta' },
@@ -357,6 +373,7 @@ function AdminArtworkFormPage({ logoImg }) {
       technique: artworkToEdit?.technique || '',
       size: artworkToEdit?.size || '',
       description: artworkToEdit?.description || '',
+      artwork_type: artworkToEdit?.artwork_type || 'obra',
       category: artworkToEdit?.category ?? '',
       commission_source: artworkToEdit?.commission_source ?? '',
       partner_name: artworkToEdit?.partner_name ?? '',
@@ -368,15 +385,19 @@ function AdminArtworkFormPage({ logoImg }) {
 
   const artworkForm = useMemo(() => ({ ...baseForm, ...draftValues }), [baseForm, draftValues])
 
+  const normalizedType = String(artworkForm.artwork_type || 'obra').toLowerCase()
+  const isCartao = normalizedType === 'cartao'
   const normalizedCategory = String(artworkForm.category || '').toLowerCase()
   const normalizedOrigin = String(artworkForm.commission_source || '').toLowerCase()
   const showPartnerField =
+    isCartao ||
     normalizedCategory === 'collab' ||
     normalizedCategory === 'exposicao' ||
     normalizedOrigin === 'direta' ||
     normalizedOrigin === 'arquiteta' ||
     normalizedOrigin === 'escritorio'
   const partnerFieldLabel = (() => {
+    if (isCartao) return 'Cliente'
     if (normalizedCategory === 'collab') return 'Marca'
     if (normalizedCategory === 'exposicao') return 'Nome da exposição'
     if (normalizedOrigin === 'arquiteta' || normalizedOrigin === 'escritorio') {
@@ -385,6 +406,7 @@ function AdminArtworkFormPage({ logoImg }) {
     return 'Cliente/Projeto'
   })()
   const partnerFieldPlaceholder = (() => {
+    if (isCartao) return 'Ex: Nome do cliente'
     if (normalizedCategory === 'collab') return 'Ex: Marca parceira'
     if (normalizedCategory === 'exposicao') return 'Ex: Exposição coletiva'
     if (normalizedOrigin === 'arquiteta' || normalizedOrigin === 'escritorio') {
@@ -520,9 +542,25 @@ function AdminArtworkFormPage({ logoImg }) {
                       </div>
                     </AnimatedField>
 
-                    {/* Ano + Técnica */}
+                    {/* Tipo de obra */}
                     <AnimatedField index={1}>
-                      <div className="grid gap-3 sm:grid-cols-2">
+                      <div className="grid gap-2">
+                        <Label>
+                          Tipo de obra
+                          <ValidDot show={Boolean(artworkForm.artwork_type)} />
+                        </Label>
+                        <Select
+                          value={artworkForm.artwork_type}
+                          onChange={handleChange('artwork_type')}
+                          options={typeOptions}
+                          className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                        />
+                      </div>
+                    </AnimatedField>
+
+                    {/* Ano + Técnica */}
+                    <AnimatedField index={2}>
+                      <div className={isCartao ? 'grid gap-3' : 'grid gap-3 sm:grid-cols-2'}>
                         <div className="grid gap-2">
                           <Label>
                             Ano
@@ -536,69 +574,75 @@ function AdminArtworkFormPage({ logoImg }) {
                             className="transition-[border-color,box-shadow,background] duration-200 focus:ring-2 focus:ring-blue-500/20"
                           />
                         </div>
-                        <div className="grid gap-2">
-                          <Label>
-                            Técnica
-                            <ValidDot show={artworkForm.technique.length >= 3} />
-                          </Label>
-                          <Input
-                            value={artworkForm.technique}
-                            onChange={handleChange('technique')}
-                            placeholder="Acrílica sobre tela"
-                            className="transition-[border-color,box-shadow,background] duration-200 focus:ring-2 focus:ring-blue-500/20"
-                          />
-                        </div>
+                        {!isCartao && (
+                          <div className="grid gap-2">
+                            <Label>
+                              Técnica
+                              <ValidDot show={artworkForm.technique.length >= 3} />
+                            </Label>
+                            <Input
+                              value={artworkForm.technique}
+                              onChange={handleChange('technique')}
+                              placeholder="Acrílica sobre tela"
+                              className="transition-[border-color,box-shadow,background] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                            />
+                          </div>
+                        )}
                       </div>
                     </AnimatedField>
 
-                    {/* Categoria + Origem */}
-                    <AnimatedField index={2}>
-                      <div className="grid gap-3 sm:grid-cols-2">
-                        <div className="grid gap-2">
-                          <Label>
-                            Categoria
-                            <ValidDot show={Boolean(artworkForm.category)} />
-                          </Label>
-                          <Select
-                            value={artworkForm.category}
-                            onChange={handleChange('category')}
-                            options={categoryOptions}
-                            className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label>
-                            Origem da encomenda
-                            <ValidDot show={Boolean(artworkForm.commission_source)} />
-                          </Label>
-                          <Select
-                            value={artworkForm.commission_source}
-                            onChange={handleChange('commission_source')}
-                            options={commissionOptions}
-                            className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
-                          />
-                        </div>
-                      </div>
-                    </AnimatedField>
+                    {!isCartao && (
+                      <>
+                        {/* Categoria + Origem */}
+                        <AnimatedField index={3}>
+                          <div className="grid gap-3 sm:grid-cols-2">
+                            <div className="grid gap-2">
+                              <Label>
+                                Categoria
+                                <ValidDot show={Boolean(artworkForm.category)} />
+                              </Label>
+                              <Select
+                                value={artworkForm.category}
+                                onChange={handleChange('category')}
+                                options={categoryOptions}
+                                className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                              />
+                            </div>
+                            <div className="grid gap-2">
+                              <Label>
+                                Origem da encomenda
+                                <ValidDot show={Boolean(artworkForm.commission_source)} />
+                              </Label>
+                              <Select
+                                value={artworkForm.commission_source}
+                                onChange={handleChange('commission_source')}
+                                options={commissionOptions}
+                                className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                              />
+                            </div>
+                          </div>
+                        </AnimatedField>
 
-                    {/* Status no shop */}
-                    <AnimatedField index={3}>
-                      <div className="grid gap-2">
-                        <Label>
-                          Status no shop
-                          <ValidDot show={Boolean(artworkForm.sale_status)} />
-                        </Label>
-                        <Select
-                          value={artworkForm.sale_status}
-                          onChange={handleChange('sale_status')}
-                          options={saleStatusOptions}
-                          className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
-                        />
-                      </div>
-                    </AnimatedField>
+                        {/* Status no shop */}
+                        <AnimatedField index={4}>
+                          <div className="grid gap-2">
+                            <Label>
+                              Status no shop
+                              <ValidDot show={Boolean(artworkForm.sale_status)} />
+                            </Label>
+                            <Select
+                              value={artworkForm.sale_status}
+                              onChange={handleChange('sale_status')}
+                              options={saleStatusOptions}
+                              className="transition-[border-color,box-shadow] duration-200 focus:ring-2 focus:ring-blue-500/20"
+                            />
+                          </div>
+                        </AnimatedField>
+                      </>
+                    )}
 
                     {showPartnerField && (
-                      <AnimatedField index={4}>
+                      <AnimatedField index={5}>
                         <div className="grid gap-2">
                           <Label>{partnerFieldLabel}</Label>
                           <Input
@@ -612,7 +656,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     )}
 
                     {/* Dimensões */}
-                    <AnimatedField index={5}>
+                    <AnimatedField index={6}>
                       <div className="grid gap-2">
                         <Label>
                           Dimensões
@@ -628,7 +672,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Descrição */}
-                    <AnimatedField index={6}>
+                    <AnimatedField index={7}>
                       <div className="grid gap-2">
                         <Label>Descrição</Label>
                         <Textarea
@@ -644,7 +688,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* URL da imagem */}
-                    <AnimatedField index={7}>
+                    <AnimatedField index={8}>
                       <div className="grid gap-2">
                         <Label>URL da imagem</Label>
                         <Input
@@ -665,7 +709,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Coleção */}
-                    <AnimatedField index={8}>
+                    <AnimatedField index={9}>
                       <div className="grid gap-2">
                         <Label>Coleção</Label>
                         <Select
@@ -678,7 +722,7 @@ function AdminArtworkFormPage({ logoImg }) {
                     </AnimatedField>
 
                     {/* Drop zone */}
-                    <AnimatedField index={9}>
+                    <AnimatedField index={10}>
                       <DropZone
                         fileInputRef={fileInputRef}
                         artworkFile={artworkFile}

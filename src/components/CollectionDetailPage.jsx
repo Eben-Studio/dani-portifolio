@@ -5,10 +5,14 @@ import ImageWithFallback from './ImageWithFallback'
 import PortfolioHeader from './PortfolioHeader'
 import Footer from './Footer'
 
+const normalizeValue = (value) => String(value || '').trim().toLowerCase()
+
 // ── Artwork Tile ──────────────────────────────────────────────────
 function ArtworkTile({ artwork, heroImg, index, onSelect }) {
   const tileRef = useRef(null)
   const imgRef = useRef(null)
+  const isCartao = normalizeValue(artwork?.artwork_type) === 'cartao'
+  const subtitle = isCartao ? (artwork.size || 'Cartão') : (artwork.technique || 'Técnica')
 
   useEffect(() => {
     const tile = tileRef.current
@@ -61,7 +65,7 @@ function ArtworkTile({ artwork, heroImg, index, onSelect }) {
       </div>
       <div className="border-t border-[#7F6A34]/12 bg-[#E8DCBA] px-4 py-4">
         <h3 className="font-['Intel_One_Mono'] text-[15px] leading-[1.1] text-[#2A2002]">{artwork.title}</h3>
-        <p className="mt-0.5 font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.16em] text-[#7F6A34]/60">{artwork.technique}</p>
+        <p className="mt-0.5 font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.16em] text-[#7F6A34]/60">{subtitle}</p>
         {artwork.description && (
           <p className="mt-2.5 font-['Inter'] text-[12.5px] leading-[1.65] text-[#3A2B05]/60 line-clamp-2">{artwork.description}</p>
         )}
@@ -101,6 +105,12 @@ function CollectionDetailPage({ collections = [], artworks = [], heroImg, logoIm
     if (!collectionsWithArtworks.length) return null
     return collectionsWithArtworks.find((collection) => collection.slug === slug) || null
   }, [collectionsWithArtworks, slug])
+
+  const highlightArtwork = selectedCollection?.artworks?.[0]
+  const highlightIsCartao = normalizeValue(highlightArtwork?.artwork_type) === 'cartao'
+  const highlightTechnique = highlightIsCartao
+    ? 'Cartão'
+    : (highlightArtwork?.technique || 'Acrílica')
 
   useEffect(() => {
     if (!selectedCollection) return
@@ -170,7 +180,7 @@ function CollectionDetailPage({ collections = [], artworks = [], heroImg, logoIm
                   <div className="grid grid-cols-2 gap-3">
                     {[
                       { label: 'Obras', value: selectedCollection.artworks.length },
-                      { label: 'Técnica', value: selectedCollection.artworks[0]?.technique || 'Acrílica' },
+                      { label: 'Técnica', value: highlightTechnique },
                     ].map((stat) => (
                       <div key={stat.label} className="rounded-[14px] border border-[#C8B789]/10 bg-[#FFFCF4]/4 px-4 py-3.5">
                         <p className="font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.22em] text-[#2A2002]/35">{stat.label}</p>

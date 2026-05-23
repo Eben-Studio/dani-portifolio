@@ -127,18 +127,22 @@ export function useAdminData({ enabled } = {}) {
           imageUrl = await uploadArtworkImage(artworkFile)
         }
 
+        const typeKey = form.artwork_type?.trim().toLowerCase() || 'obra'
+        const isCartao = typeKey === 'cartao'
+
         const payload = {
           title: form.title?.trim() || '',
           year: parseNumber(form.year),
-          technique: form.technique?.trim() || '',
+          technique: isCartao ? null : (form.technique?.trim() || ''),
           size: form.size?.trim() || '',
           description: form.description?.trim() || '',
-          category: form.category?.trim().toLowerCase() || null,
-          commission_source: form.commission_source?.trim().toLowerCase() || null,
+          category: isCartao ? null : (form.category?.trim().toLowerCase() || null),
+          commission_source: isCartao ? null : (form.commission_source?.trim().toLowerCase() || null),
           partner_name: form.partner_name?.trim() || null,
-          sale_status: form.sale_status?.trim().toLowerCase() || null,
+          sale_status: isCartao ? null : (form.sale_status?.trim().toLowerCase() || null),
           image_url: imageUrl || null,
           collection_id: parseIdentifier(form.collection_id),
+          artwork_type: typeKey,
         }
 
         if (artworkId) {

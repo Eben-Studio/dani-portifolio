@@ -134,7 +134,9 @@ function ShopPage({ artworks = [], heroImg, logoImg, onArtworkSelect }) {
   const countRef = useRef(null)
 
   const saleArtworks = useMemo(
-    () => artworks.filter((artwork) => normalizeValue(artwork.sale_status)),
+    () => artworks.filter(
+      (artwork) => normalizeValue(artwork.sale_status) && normalizeValue(artwork.artwork_type) !== 'cartao',
+    ),
     [artworks],
   )
 

@@ -14,6 +14,7 @@ import ArtworkDetailSection from './components/ArtworkDetailSection'
 import Footer from './components/Footer'
 import AboutPage from './components/AboutPage'
 import PortfolioPage from './components/PortfolioPage'
+import CartoesPage from './components/CartoesPage'
 import ShopPage from './components/ShopPage'
 import CollectionDetailPage from './components/CollectionDetailPage'
 import AuthPage from './components/AuthPage'
@@ -192,6 +193,17 @@ function App() {
           element={
             <PortfolioPage
               collections={collections}
+              artworks={artworks}
+              heroImg={heroImg}
+              logoImg={logoImg}
+              onArtworkSelect={handleArtworkSelect}
+            />
+          }
+        />
+        <Route
+          path="/cartoes"
+          element={
+            <CartoesPage
               artworks={artworks}
               heroImg={heroImg}
               logoImg={logoImg}

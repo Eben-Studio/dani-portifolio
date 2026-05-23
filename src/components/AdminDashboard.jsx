@@ -23,6 +23,11 @@ const CATEGORY_LABELS = {
   exposicao: 'Exposição',
 }
 
+const TYPE_LABELS = {
+  obra: 'Obra',
+  cartao: 'Cartão',
+}
+
 const ORIGIN_LABELS = {
   direta: 'Direta',
   arquiteta: 'Arquiteta',
@@ -39,6 +44,7 @@ const normalizeValue = (value) => String(value || '').trim().toLowerCase()
 const formatCategory = (value) => CATEGORY_LABELS[normalizeValue(value)] || value
 const formatOrigin = (value) => ORIGIN_LABELS[normalizeValue(value)] || value
 const formatSaleStatus = (value) => SALE_STATUS_LABELS[normalizeValue(value)] || value
+const formatType = (value) => TYPE_LABELS[normalizeValue(value)] || value
 
 const artworkSortOptions = [
   { value: 'year-desc', label: 'Ano (desc)' },
@@ -177,9 +183,11 @@ function SummaryCard({ label, value, index }) {
 // ── Artwork row ───────────────────────────────────────────────────────────
 function ArtworkRow({ artwork, index, collectionLabel, isSaving, onEdit, onDelete }) {
   const [imgLoaded, setImgLoaded] = useState(false)
+  const isCartao = normalizeValue(artwork.artwork_type) === 'cartao'
+  const typeLabel = formatType(artwork.artwork_type) || 'Obra'
   const categoryLabel = formatCategory(artwork.category) || 'Sem categoria'
   const originLabel = formatOrigin(artwork.commission_source) || 'Sem origem'
-  const partnerLabel = artwork.partner_name || 'Sem parceiro'
+  const partnerLabel = artwork.partner_name || (isCartao ? 'Sem cliente' : 'Sem parceiro')
   const saleStatusLabel = formatSaleStatus(artwork.sale_status) || 'Sem status'
 
   return (
@@ -214,17 +222,28 @@ function ArtworkRow({ artwork, index, collectionLabel, isSaving, onEdit, onDelet
             {artwork.title || 'Sem título'}
           </p>
           <div className="mt-2 grid gap-1 text-[11.5px] text-ink-muted/70">
-            {[
-              ['Ano', artwork.year || 'Sem ano'],
-              ['Técnica', artwork.technique || 'Sem técnica'],
-              ['Dimensões', artwork.size || 'Sem dimensões'],
-              ['Categoria', categoryLabel],
-              ['Origem', originLabel],
-              ['Parceiro', partnerLabel],
-              ['Status shop', saleStatusLabel],
-              ['Coleção', collectionLabel || 'Sem coleção'],
-              ['Descrição', artwork.description || 'Sem descrição'],
-            ].map(([lbl, val]) => (
+            {(isCartao
+              ? [
+                ['Tipo', typeLabel],
+                ['Ano', artwork.year || 'Sem ano'],
+                ['Tamanho', artwork.size || 'Sem tamanho'],
+                ['Cliente', partnerLabel],
+                ['Coleção', collectionLabel || 'Sem coleção'],
+                ['Descrição', artwork.description || 'Sem descrição'],
+              ]
+              : [
+                ['Tipo', typeLabel],
+                ['Ano', artwork.year || 'Sem ano'],
+                ['Técnica', artwork.technique || 'Sem técnica'],
+                ['Dimensões', artwork.size || 'Sem dimensões'],
+                ['Categoria', categoryLabel],
+                ['Origem', originLabel],
+                ['Parceiro', partnerLabel],
+                ['Status shop', saleStatusLabel],
+                ['Coleção', collectionLabel || 'Sem coleção'],
+                ['Descrição', artwork.description || 'Sem descrição'],
+              ]
+            ).map(([lbl, val]) => (
               <p key={lbl} className="flex flex-wrap gap-2">
                 <span className="font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.2em] text-ink/45">
                   {lbl}

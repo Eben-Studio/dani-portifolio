@@ -29,7 +29,7 @@ function Footer({ id }) {
       canal: { label: 'E-mail', href: 'mailto:contatodanielakamachi@gmail.com'},
     },
     {
-      service: { label: 'Cartões', href: '/portifolio' },
+      service: { label: 'Cartões', href: '/cartoes' },
       canal: { label: '' },
     },
   ]

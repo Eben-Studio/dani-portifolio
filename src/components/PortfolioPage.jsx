@@ -28,6 +28,7 @@ const toYearNumber = (value) => {
   const num = Number(value)
   return Number.isFinite(num) ? num : 0
 }
+const isCartao = (artwork) => normalizeValue(artwork?.artwork_type) === 'cartao'
 
 // ── Artwork Card ─────────────────────────────────────────────────
 function ArtworkCard({ artwork, heroImg, index, onSelect }) {
@@ -214,21 +215,26 @@ function PortfolioPage({ collections = [], artworks = [], heroImg, logoImg, onAr
 
   const navigate = useNavigate()
 
+  const portfolioArtworks = useMemo(
+    () => artworks.filter((artwork) => !isCartao(artwork)),
+    [artworks],
+  )
+
   const years = useMemo(() => {
-    const values = artworks.map((artwork) => artwork.year).filter((year) => year)
+    const values = portfolioArtworks.map((artwork) => artwork.year).filter((year) => year)
     const unique = Array.from(new Set(values.map((year) => String(year))))
     return ['Todos', ...unique.sort((a, b) => Number(b) - Number(a))]
-  }, [artworks])
+  }, [portfolioArtworks])
 
   const techniques = useMemo(() => {
-    const values = artworks.map((artwork) => artwork.technique).filter((technique) => technique)
+    const values = portfolioArtworks.map((artwork) => artwork.technique).filter((technique) => technique)
     return ['Todos', ...Array.from(new Set(values))]
-  }, [artworks])
+  }, [portfolioArtworks])
 
   const categories = useMemo(() => {
-    const values = artworks.map((artwork) => normalizeValue(artwork.category)).filter((category) => category)
+    const values = portfolioArtworks.map((artwork) => normalizeValue(artwork.category)).filter((category) => category)
     return ['Todos', ...Array.from(new Set(values))]
-  }, [artworks])
+  }, [portfolioArtworks])
 
   const matchesFilters = useCallback((artwork) => {
     if (yearFilter !== 'Todos' && String(artwork.year) !== String(yearFilter)) return false
@@ -239,22 +245,22 @@ function PortfolioPage({ collections = [], artworks = [], heroImg, logoImg, onAr
   }, [yearFilter, techniqueFilter, categoryFilter, availabilityFilter])
 
   const filteredArtworks = useMemo(() => {
-    let list = artworks.filter(matchesFilters)
+    let list = portfolioArtworks.filter(matchesFilters)
     if (sortBy === 'recente') list = [...list].sort((a, b) => toYearNumber(b.year) - toYearNumber(a.year))
     if (sortBy === 'antigo') list = [...list].sort((a, b) => toYearNumber(a.year) - toYearNumber(b.year))
     return list
-  }, [artworks, matchesFilters, sortBy])
+  }, [portfolioArtworks, matchesFilters, sortBy])
 
   const artworksByCollection = useMemo(() => {
     const map = new Map()
-    artworks.forEach((artwork) => {
+    portfolioArtworks.forEach((artwork) => {
       if (!artwork.collection_id) return
       const key = String(artwork.collection_id)
       if (!map.has(key)) map.set(key, [])
       map.get(key).push(artwork)
     })
     return map
-  }, [artworks])
+  }, [portfolioArtworks])
 
   const collectionsWithArtworks = useMemo(
     () =>

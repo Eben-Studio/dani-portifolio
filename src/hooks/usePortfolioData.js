@@ -3,6 +3,7 @@ import { supabase } from '../lib/supabaseClient'
 
 const COLLECTIONS_TABLE = 'collections'
 const ARTWORKS_TABLE = 'artworks'
+const HOME_CONTENT_TABLE = 'home_page_content'
 const STORAGE_BUCKET = 'daniela'
 
 function resolveArtworkImage(imageUrl) {
@@ -12,9 +13,17 @@ function resolveArtworkImage(imageUrl) {
   return data?.publicUrl || ''
 }
 
+function resolveStorageUrl(assetUrl) {
+  if (!assetUrl) return ''
+  if (assetUrl.startsWith('http')) return assetUrl
+  const { data } = supabase.storage.from(STORAGE_BUCKET).getPublicUrl(assetUrl)
+  return data?.publicUrl || ''
+}
+
 export function usePortfolioData({ enabled = true } = {}) {
   const [collections, setCollections] = useState([])
   const [artworks, setArtworks] = useState([])
+  const [homeContent, setHomeContent] = useState(null)
   const [isLoading, setIsLoading] = useState(Boolean(enabled))
   const [hasLoaded, setHasLoaded] = useState(false)
   const [error, setError] = useState('')
@@ -25,19 +34,33 @@ export function usePortfolioData({ enabled = true } = {}) {
     setError('')
 
     try {
-      const [collectionsRes, artworksRes] = await Promise.all([
+      const [collectionsRes, artworksRes, homeContentRes] = await Promise.all([
         supabase.from(COLLECTIONS_TABLE).select('*').order('name', { ascending: true }),
         supabase.from(ARTWORKS_TABLE).select('*').order('year', { ascending: false }),
+        supabase.from(HOME_CONTENT_TABLE).select('*').eq('page_key', 'home').maybeSingle(),
       ])
 
-      if (collectionsRes.error || artworksRes.error) {
+      if (collectionsRes.error || artworksRes.error || homeContentRes.error) {
         setError(
-          collectionsRes.error?.message || artworksRes.error?.message || 'Erro ao carregar dados.'
+          collectionsRes.error?.message ||
+            artworksRes.error?.message ||
+            homeContentRes.error?.message ||
+            'Erro ao carregar dados.'
         )
       }
 
       setCollections(collectionsRes.data || [])
       setArtworks(artworksRes.data || [])
+      setHomeContent(
+        homeContentRes.data
+          ? {
+              ...homeContentRes.data,
+              hero_title: homeContentRes.data.hero_title || '',
+              hero_image_url: resolveStorageUrl(homeContentRes.data.hero_image_url),
+              presentation_video_url: resolveStorageUrl(homeContentRes.data.presentation_video_url),
+            }
+          : null,
+      )
     } finally {
       setIsLoading(false)
       setHasLoaded(true)
@@ -59,6 +82,7 @@ export function usePortfolioData({ enabled = true } = {}) {
       .channel('portfolio-realtime')
       .on('postgres_changes', { event: '*', schema: 'public', table: COLLECTIONS_TABLE }, loadData)
       .on('postgres_changes', { event: '*', schema: 'public', table: ARTWORKS_TABLE }, loadData)
+      .on('postgres_changes', { event: '*', schema: 'public', table: HOME_CONTENT_TABLE }, loadData)
       .subscribe()
 
     return () => {
@@ -86,6 +110,7 @@ export function usePortfolioData({ enabled = true } = {}) {
   return {
     collections,
     artworks: normalizedArtworks,
+    homeContent,
     isLoading,
     hasLoaded,
     error,

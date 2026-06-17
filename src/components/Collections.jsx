@@ -11,7 +11,7 @@ gsap.registerPlugin(ScrollTrigger)
 
 
 // ── Collection Card (list view) ───────────────────────────────────
-function CollectionCard({ collection, artworks, heroImg, onOpen, index }) {
+function CollectionCard({ collection, artworks, onOpen, index }) {
   const img0Ref = useRef(null)
   const img1Ref = useRef(null)
   const img2Ref = useRef(null)
@@ -64,12 +64,19 @@ function CollectionCard({ collection, artworks, heroImg, onOpen, index }) {
         {/* IMAGEM PRINCIPAL */}
         <div className="relative col-span-1 row-span-2 overflow-hidden rounded-[18px] bg-[#D5C9A4]">
           <div ref={img0Ref} className="h-full w-full">
-            <ImageWithFallback
-              src={p0?.image}
-              alt={p0?.title || collection.name}
-              fallbackSrc={heroImg}
-              className="h-full w-full object-cover object-center"
-            />
+           {p0?.image ? (
+      <ImageWithFallback
+        src={p0.image}
+        alt={p0.title || collection.name}
+        className="h-full w-full object-cover object-center"
+        fallbackClassName="h-full w-full bg-[#D5C9A4]"
+      />
+    ) : (
+      <div className="flex h-full w-full flex-col items-center justify-center gap-1.5 bg-[linear-gradient(135deg,rgba(255,252,244,0.96)_0%,rgba(225,214,181,0.96)_100%)] px-3 text-center">
+        <p className="font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.2em] text-[#2A2002]/35">Sem obras</p>
+        <p className="font-['Inter'] text-[11px] leading-[1.35] text-[#2A2002]/45">Esta coleção ainda está sendo montada.</p>
+      </div>
+    )}
           </div>
 
           {/* OVERLAY */}
@@ -108,12 +115,16 @@ function CollectionCard({ collection, artworks, heroImg, onOpen, index }) {
             className="relative overflow-hidden rounded-[18px] bg-[#D5C9A4]"
           >
             <div ref={ref} className="h-full w-full">
-              <ImageWithFallback
-                src={art?.image}
-                alt={art?.title || ''}
-                fallbackSrc={heroImg}
-                className="h-full w-full object-cover object-center"
-              />
+              {art?.image ? (
+        <ImageWithFallback
+          src={art.image}
+          alt={art?.title || ''}
+          className="h-full w-full object-cover object-center"
+          fallbackClassName="h-full w-full bg-[#D5C9A4]"
+        />
+      ) : (
+        <div className="h-full w-full bg-[linear-gradient(135deg,rgba(255,252,244,0.96)_0%,rgba(225,214,181,0.96)_100%)]" />
+      )}
             </div>
 
             <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#2A2002]/30 to-transparent" />
@@ -132,7 +143,7 @@ function CollectionCard({ collection, artworks, heroImg, onOpen, index }) {
 }
 
 // ── Artwork Tile ──────────────────────────────────────────────────
-function ArtworkTile({ artwork, heroImg, index, onSelect }) {
+function ArtworkTile({ artwork, index, onSelect }) {
   const tileRef = useRef(null)
   const imgRef = useRef(null)
 
@@ -173,8 +184,12 @@ function ArtworkTile({ artwork, heroImg, index, onSelect }) {
     >
       <div className="relative h-[220px] overflow-hidden bg-[#DDD0AD] sm:h-[270px]">
         <div ref={imgRef} className="h-full w-full">
-          <ImageWithFallback src={artwork.image} alt={artwork.title} fallbackSrc={heroImg}
-            className="h-full w-full object-cover" fallbackClassName="h-full w-full bg-[#D5C9A4]" />
+          <ImageWithFallback
+            src={artwork.image}
+            alt={artwork.title}
+            className="h-full w-full object-cover"
+            fallbackClassName="h-full w-full bg-[#D5C9A4]"
+          />
         </div>
         <span className="absolute left-3 top-3 rounded-full bg-[#2A2002]/70 px-2.5 py-1 font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.14em] text-[#C8B789] backdrop-blur-sm">
           {artwork.year}
@@ -192,7 +207,7 @@ function ArtworkTile({ artwork, heroImg, index, onSelect }) {
 }
 
 // ── Main ──────────────────────────────────────────────────────────
-function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtworkSelect }) {
+function Collections({ collections = [], artworks = [], logoImg, onArtworkSelect }) {
   const pageRef = useRef(null)
   const heroTextRef = useRef(null)
   const detailRef = useRef(null)
@@ -233,29 +248,25 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
 
   useEffect(() => {
     if (!selectedCollection) return
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     setDetailGridKey((k) => k + 1)
   }, [selectedCollection])
-
-  // Filters for selected collection (computed only when viewing a collection)
 
   const filteredCollectionArtworks = useMemo(() => {
     if (!selectedCollection) return []
     return selectedCollection.artworks.slice()
   }, [selectedCollection])
 
-  // Global filters for the collections list (when viewing all collections)
   const allYears = useMemo(() => {
     const values = artworks.map((a) => a.year).filter((year) => year)
     const unique = Array.from(new Set(values.map((year) => String(year))))
     return ['Todos', ...unique.sort((a, b) => Number(b) - Number(a))]
   }, [artworks])
+
   const allTechniques = useMemo(() => {
     const values = artworks.map((a) => a.technique).filter((technique) => technique)
     return ['Todos', ...Array.from(new Set(values))]
   }, [artworks])
 
-  // Collections adjusted by global filters: each collection keeps only artworks matching the filters
   const collectionsToShow = useMemo(() => {
     const hasFilters = listYearFilter !== 'Todos' || listTechniqueFilter !== 'Todos'
     return collectionsWithArtworks.map((col) => {
@@ -269,41 +280,38 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
   }, [collectionsWithArtworks, listYearFilter, listTechniqueFilter])
 
   useEffect(() => {
-  if (!selectedCollection) return
+    if (!selectedCollection) return
 
-  const ctx = gsap.context(() => {
-    const tl = gsap.timeline()
+    const ctx = gsap.context(() => {
+      const tl = gsap.timeline()
 
-    // container geral
-    tl.from('.collection-anim', {
-      opacity: 0,
-      y: 40,
-      duration: 0.8,
-      ease: 'power3.out',
-      stagger: 0.15,
-    })
+      tl.from('.collection-anim', {
+        opacity: 0,
+        y: 40,
+        duration: 0.8,
+        ease: 'power3.out',
+        stagger: 0.15,
+      })
 
-    // imagem destaque com zoom suave
-    tl.from('.collection-image', {
-      scale: 1.08,
-      opacity: 0,
-      duration: 1,
-      ease: 'power2.out',
-    }, "-=0.6")
+      tl.from('.collection-image', {
+        scale: 1.08,
+        opacity: 0,
+        duration: 1,
+        ease: 'power2.out',
+      }, "-=0.6")
 
-    // artworks grid
-    tl.from('.artwork-item', {
-      opacity: 0,
-      y: 30,
-      duration: 0.6,
-      stagger: 0.08,
-      ease: 'power3.out',
-    }, "-=0.5")
+      tl.from('.artwork-item', {
+        opacity: 0,
+        y: 30,
+        duration: 0.6,
+        stagger: 0.08,
+        ease: 'power3.out',
+      }, "-=0.5")
 
-  }, pageRef)
+    }, pageRef)
 
-  return () => ctx.revert()
-}, [selectedCollection])
+    return () => ctx.revert()
+  }, [selectedCollection])
 
   const openCollection = (slug) => {
     const params = new URLSearchParams()
@@ -328,7 +336,7 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
 
           {/* ── Hero ─────────────────────────────────── */}
           {!selectedCollection && (
-            <section className="relative overflow-hidden rounded-[32px] border border-[#7F6A34]/20 bg-[#EDE4CC]  px-7 py-10 shadow-[0_28px_64px_rgba(42,32,2,0.18)] sm:px-10 sm:py-12">
+            <section className="relative overflow-hidden rounded-[32px] border border-[#7F6A34]/20 bg-[#EDE4CC] px-7 py-10 shadow-[0_28px_64px_rgba(42,32,2,0.18)] sm:px-10 sm:py-12">
               <div className="pointer-events-none absolute -right-12 -top-12 h-56 w-56 rounded-full bg-[#C8B789]/8 blur-3xl" />
               <div className="pointer-events-none absolute -bottom-10 left-0 h-48 w-48 rounded-full bg-[#EDE4CC]/10 blur-3xl" />
 
@@ -358,20 +366,19 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
           {/* ── List ─────────────────────────────────── */}
           {!selectedCollection ? (
             <>
-              {/* Filter bar for collections listing */}
               <div className="mb-3 flex flex-wrap items-center gap-3 rounded-[16px] border border-[#7F6A34]/20 bg-[#EDE4CC] px-5 py-3.5">
                 <span className="font-['Intel_One_Mono'] text-[12.5px] uppercase tracking-[0.28em] text-[#2A2002]/35 shrink-0">Filtrar</span>
                 <div className="h-5 w-px bg-[#7F6A34]/20" />
                 <CustomSelect label="Ano" value={listYearFilter} options={allYears} onChange={(v) => { setListYearFilter(v); setListGridKey(k => k + 1) }} active={listYearFilter !== 'Todos'} />
                 <CustomSelect label="Técnica" value={listTechniqueFilter} options={allTechniques} onChange={(v) => { setListTechniqueFilter(v); setListGridKey(k => k + 1) }} active={listTechniqueFilter !== 'Todos'} />
                 <div className="flex-1" />
-                <button type="button" onClick={() => { setListYearFilter('Todos'); setListTechniqueFilter('Todos'); setListGridKey(k => k + 1) }} className=" font-['Intel_One_Mono'] rounded-full border px-3 py-1">Limpar</button>
+                <button type="button" onClick={() => { setListYearFilter('Todos'); setListTechniqueFilter('Todos'); setListGridKey(k => k + 1) }} className="font-['Intel_One_Mono'] rounded-full border px-3 py-1">Limpar</button>
               </div>
 
               <section key={listGridKey} className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-3">
                 {collectionsToShow.map((col, i) => (
                   <CollectionCard key={col.id || col.slug} collection={col} artworks={col.artworks}
-                    heroImg={heroImg} index={i} onOpen={() => openCollection(col.slug)} />
+                    index={i} onOpen={() => openCollection(col.slug)} />
                 ))}
               </section>
             </>
@@ -380,13 +387,10 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
             /* ── Detail ──────────────────────────────── */
             <section ref={detailRef} className="space-y-4">
 
-              {/* Info + image */}
               <div className="grid gap-4 lg:grid-cols-[1fr_1fr] lg:items-stretch">
 
-                {/* Left: dark info panel */}
                 <div className="flex flex-col justify-between gap-6 rounded-[28px] bg-[#EDE4CC] p-7 shadow-[0_16px_44px_rgba(42,32,2,0.16)] sm:p-9">
                   <div className="flex flex-col gap-5">
-
                     <div>
                       <p className="font-['Intel_One_Mono'] text-[12px] uppercase tracking-[0.26em] text-[#2A2002]">Coleção</p>
                       <h2 className="mt-1.5 font-['Intel_One_Mono'] text-[34px] leading-[0.94] text-[#2A2002] sm:text-[46px]">
@@ -396,7 +400,7 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
                         {selectedCollection.tagline}
                       </p>
                       <p className="mt-4 max-w-[50ch] font-['Inter'] text-[14px] leading-[1.8] text-[#2A2002]">
-                                              {selectedCollection.description}
+                        {selectedCollection.description}
                       </p>
                     </div>
 
@@ -425,12 +429,10 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
                   </div>
                 </div>
 
-                {/* Right: featured image */}
                 <div className="relative min-h-[260px] overflow-hidden rounded-[28px] border border-[#7F6A34]/12 bg-[#D5C9A4] shadow-[0_18px_48px_rgba(64,47,1,0.12)] sm:min-h-[360px]">
                   <ImageWithFallback
                     src={selectedCollection.artworks[0]?.image}
                     alt={selectedCollection.name}
-                    fallbackSrc={heroImg}
                     className="absolute inset-0 h-full w-full object-cover object-center"
                     fallbackClassName="absolute inset-0 h-full w-full bg-[#D5C9A4]"
                   />
@@ -444,18 +446,14 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
                 </div>
               </div>
 
-              {/* Artworks */}
               <div className="space-y-3">
                 <div className="flex items-end justify-between px-1 pt-1">
                   <div>
                     <h3 className="font-['Intel_One_Mono'] text-[22px] leading-[0.96] text-[#2A2002] sm:text-[28px]">
                       Obras da coleção_
                     </h3>
-                    <div className="mt-2 flex gap-2 text-sm">
-
-                    </div>
+                    <div className="mt-2 flex gap-2 text-sm" />
                   </div>
-
                   <span className="font-['Intel_One_Mono'] text-[9.5px] uppercase tracking-[0.18em] text-[#7F6A34]/55">
                     {filteredCollectionArtworks.length} {filteredCollectionArtworks.length === 1 ? 'obra' : 'obras'}
                   </span>
@@ -473,7 +471,6 @@ function Collections({ collections = [], artworks = [], heroImg, logoImg, onArtw
                       <ArtworkTile
                         key={artwork.id}
                         artwork={artwork}
-                        heroImg={heroImg}
                         index={i}
                         onSelect={onArtworkSelect}
                       />

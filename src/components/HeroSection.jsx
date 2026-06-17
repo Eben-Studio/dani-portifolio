@@ -2,10 +2,9 @@ import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 import ImageWithFallback from './ImageWithFallback'
 
-function HeroSection({ id, heroImg, image }) {
+function HeroSection({ id, heroImg, image, heroTitle = 'Arte que te\nencontra_' }) {
   const sectionRef = useRef(null)
   const titleRef = useRef(null)
-  const leftContentRef = useRef(null)
   const rightImageRef = useRef(null)
 
   useEffect(() => {
@@ -15,15 +14,6 @@ function HeroSection({ id, heroImg, image }) {
         y: 50,
         duration: 1,
         ease: 'power3.out',
-      })
-
-      gsap.from(leftContentRef.current?.children, {
-        opacity: 0,
-        y: 30,
-        duration: 0.8,
-        stagger: 0.2,
-        ease: 'power3.out',
-        delay: 0.3,
       })
 
       gsap.from(rightImageRef.current, {
@@ -42,8 +32,11 @@ function HeroSection({ id, heroImg, image }) {
   <section id={id} ref={sectionRef} className="bg-white/30 backdrop-blur-md w-full p-4 sm:p-6 lg:p-7">
       <div className="flex flex-col">
         <div className="flex flex-col justify-between font-['Intel_One_Mono'] text-ink">
-          <h1 ref={titleRef} className="mb-7 max-w-[700px] text-left text-[28px] leading-[1.08] tracking-[0.01em] sm:text-[38px] lg:text-[44px]">
-          Arte que te <br/>encontra_
+          <h1
+            ref={titleRef}
+            className="mb-7 max-w-[700px] whitespace-pre-line text-left text-[28px] leading-[1.08] tracking-[0.01em] sm:text-[38px] lg:text-[44px]"
+          >
+          {heroTitle}
           </h1>
         </div>
 

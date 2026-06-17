@@ -12,6 +12,13 @@ function AdminPageShell({ logoImg, title, subtitle, actions, onSignOut, children
   }
 
   const navItems = [
+    { label: 'Home', href: '/admin/home', icon: (
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
+        <path d="M3 11.5 12 4l9 7.5" />
+        <path d="M6.5 10.5V20h11V10.5" />
+        <path d="M10 20v-6h4v6" />
+      </svg>
+    ) },
     { label: 'Painel', href: '/admin', icon: (
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" className="h-4 w-4">
         <path d="M4 4h7v7H4z" />

@@ -111,6 +111,7 @@ function CollectionDetailPage({ collections = [], artworks = [], heroImg, logoIm
   const highlightTechnique = highlightIsCartao
     ? 'Cartão'
     : (highlightArtwork?.technique || 'Acrílica')
+  const hasHighlightArtwork = Boolean(highlightArtwork)
 
   useEffect(() => {
     if (!selectedCollection) return
@@ -208,20 +209,39 @@ function CollectionDetailPage({ collections = [], artworks = [], heroImg, logoIm
               </div>
 
               <div className="relative min-h-[260px] overflow-hidden rounded-[28px] border border-[#7F6A34]/12 bg-[#D5C9A4] shadow-[0_18px_48px_rgba(64,47,1,0.12)] sm:min-h-[360px]">
-                <ImageWithFallback
-                  src={selectedCollection.artworks[0]?.image}
-                  alt={selectedCollection.name}
-                  fallbackSrc={heroImg}
-                  className="absolute inset-0 h-full w-full object-cover object-center"
-                  fallbackClassName="absolute inset-0 h-full w-full bg-[#D5C9A4]"
-                />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#C8B789]/40 to-transparent" />
-                <div className="absolute inset-x-4 bottom-4 rounded-[14px] border border-[#C8B789]/14 bg-[#EDE4CC]/45 px-4 py-3.5 backdrop-blur-sm">
-                  <p className="font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.2em] text-[#2A2002]">Destaque</p>
-                  <p className="mt-0.5 font-['Inter'] text-[13.5px] leading-[1.5] text-[#2A2002]">
-                    {selectedCollection.artworks[0]?.title}
-                  </p>
-                </div>
+                {hasHighlightArtwork ? (
+                  <>
+                    <ImageWithFallback
+                      src={selectedCollection.artworks[0]?.image}
+                      alt={selectedCollection.name}
+                      fallbackSrc={heroImg}
+                      className="absolute inset-0 h-full w-full object-cover object-center"
+                      fallbackClassName="absolute inset-0 h-full w-full bg-[#D5C9A4]"
+                    />
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#C8B789]/40 to-transparent" />
+                    <div className="absolute inset-x-4 bottom-4 rounded-[14px] border border-[#C8B789]/14 bg-[#EDE4CC]/45 px-4 py-3.5 backdrop-blur-sm">
+                      <p className="font-['Intel_One_Mono'] text-[9px] uppercase tracking-[0.2em] text-[#2A2002]">Destaque</p>
+                      <p className="mt-0.5 font-['Inter'] text-[13.5px] leading-[1.5] text-[#2A2002]">
+                        {selectedCollection.artworks[0]?.title}
+                      </p>
+                    </div>
+                  </>
+                ) : (
+                  <div className="absolute inset-0 flex h-full w-full items-center justify-center bg-[radial-gradient(circle_at_top,rgba(255,252,244,0.9),rgba(213,201,164,0.95)_60%,rgba(200,183,137,0.98))] px-6 text-center">
+                    <div className="max-w-[340px] space-y-3 rounded-[22px] border border-[#2A2002]/10 bg-[#FFFCF4]/55 px-6 py-8 backdrop-blur-sm">
+                      <p className="font-['Intel_One_Mono'] text-[10px] uppercase tracking-[0.22em] text-[#2A2002]/45">
+                        Coleção sem obras ainda
+                      </p>
+                      <h4 className="font-['Intel_One_Mono'] text-[24px] leading-[1] text-[#2A2002] sm:text-[30px]">
+                        {selectedCollection.name}
+                      </h4>
+                      <p className="font-['Inter'] text-[13px] leading-[1.6] text-[#2A2002]/70">
+                        Em breve esta coleção vai receber novas peças. Por enquanto, a apresentação da página
+                        fica focada no nome, na tagline e na descrição.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
             </div>
 

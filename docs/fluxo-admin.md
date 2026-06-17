@@ -26,7 +26,18 @@
 - Use "Remover" para excluir.
 - Para trocar imagem, envie novo arquivo ou edite a URL.
 
+## 5) Conteúdo da home
+- Menu lateral: clique em "Home".
+- Edite o texto do hero.
+- Envie a imagem do hero.
+- Envie o vídeo de apresentação.
+- Clique em salvar.
+
 ## Observacoes tecnicas
-- Tabelas usadas: collections e artworks (schema public).
+- Tabelas usadas: collections, artworks, home_page_content e admin_users (schema public).
 - Storage bucket: daniela.
-- Para gravar, o usuario precisa estar autenticado e ter permissao de admin (RLS).
+- Para gravar, o usuario precisa estar autenticado e constar em public.admin_users (RLS).
+- Leitura publica e permitida para collections, artworks, home_page_content e storage.objects do bucket daniela.
+
+## SQL / Policies
+Veja o arquivo [supabase-home-content.sql](supabase-home-content.sql) para o SQL consolidado da nova tabela singleton da home, das policies e do bucket `daniela`.

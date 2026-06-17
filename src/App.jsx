@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { Navigate, Route, Routes, useLocation, useNavigate, useSearchParams } from 'react-router-dom'
-import heroImg from './assets/hero.png'
 import logoImg from './assets/logo.png'
 import imagem1Img from './assets/imagem1.png'
 import imagem2Img from './assets/imagem2.png'
@@ -21,6 +20,7 @@ import AuthPage from './components/AuthPage'
 import AdminDashboard from './components/AdminDashboard'
 import AdminArtworkFormPage from './components/admin/AdminArtworkFormPage'
 import AdminCollectionFormPage from './components/admin/AdminCollectionFormPage'
+import AdminHomeContentPage from './components/admin/AdminHomeContentPage'
 import { usePortfolioData } from './hooks/usePortfolioData'
 
 function LoadingOverlay({ visible }) {
@@ -60,6 +60,7 @@ function HomeRoute({
   selectedArtwork,
   heroImgSrc,
   logoImgSrc,
+  heroTitle,
   videoSource,
   imageSrc,
   onArtworkSelect,
@@ -90,7 +91,7 @@ function HomeRoute({
       <div className="px-2 py-4 sm:px-4 lg:px-5">
         <div className="mx-auto w-full max-w-[1480px]">
           <PortfolioHeader logoImg={logoImgSrc} />
-          <HeroSection id="sobre" heroImg={heroImgSrc} image={imageSrc} />
+          <HeroSection id="sobre" heroImg={heroImgSrc} image={imageSrc} heroTitle={heroTitle} />
           <ArtworksCarouselSection
             id="obras"
             artworks={artworks}
@@ -115,9 +116,13 @@ function App() {
   const isAuthRoute = location.pathname === '/auth'
   const shouldLoadPortfolio = !isAdminRoute && !isAuthRoute
 
-  const { collections, artworks, isLoading, hasLoaded } = usePortfolioData({
+  const { collections, artworks, homeContent, isLoading, hasLoaded } = usePortfolioData({
     enabled: shouldLoadPortfolio,
   })
+
+  const heroTitle = homeContent?.hero_title || 'Arte que te\nencontra_'
+  const heroImageSrc = homeContent?.hero_image_url || teste_imagem
+  const presentationVideoSrc = homeContent?.presentation_video_url || videoSrc
 
   const artworkId = searchParams.get('obra')
   const selectedArtwork = useMemo(() => {
@@ -155,10 +160,10 @@ function App() {
             <HomeRoute
               artworks={artworks}
               selectedArtwork={selectedArtwork}
-              heroImgSrc={heroImg}
               logoImgSrc={logoImg}
-              imageSrc={teste_imagem}
-              videoSource={videoSrc}
+              heroTitle={heroTitle}
+              imageSrc={heroImageSrc}
+              videoSource={presentationVideoSrc}
               onArtworkSelect={handleArtworkSelect}
               onBack={backToPortfolio}
             />
@@ -169,7 +174,6 @@ function App() {
           element={
             <AboutPage
               logoImg={logoImg}
-              heroImg={heroImg}
               imagem1Img={imagem1Img}
               imagem2Img={imagem2Img}
               onHome={goHome}
@@ -182,7 +186,6 @@ function App() {
           element={
             <ShopPage
               artworks={artworks}
-              heroImg={heroImg}
               logoImg={logoImg}
               onArtworkSelect={handleArtworkSelect}
             />
@@ -194,7 +197,6 @@ function App() {
             <PortfolioPage
               collections={collections}
               artworks={artworks}
-              heroImg={heroImg}
               logoImg={logoImg}
               onArtworkSelect={handleArtworkSelect}
             />
@@ -205,7 +207,6 @@ function App() {
           element={
             <CartoesPage
               artworks={artworks}
-              heroImg={heroImg}
               logoImg={logoImg}
               onArtworkSelect={handleArtworkSelect}
             />
@@ -217,7 +218,6 @@ function App() {
             <CollectionDetailPage
               collections={collections}
               artworks={artworks}
-              heroImg={heroImg}
               logoImg={logoImg}
               onArtworkSelect={handleArtworkSelect}
             />
@@ -229,6 +229,7 @@ function App() {
         />
         <Route path="/auth" element={<AuthPage logoImg={logoImg} />} />
         <Route path="/admin" element={<AdminDashboard logoImg={logoImg} defaultTab="artworks" />} />
+        <Route path="/admin/home" element={<AdminHomeContentPage logoImg={logoImg} />} />
         <Route path="/admin/obras" element={<AdminDashboard logoImg={logoImg} defaultTab="artworks" />} />
         <Route path="/admin/obras/nova" element={<AdminArtworkFormPage logoImg={logoImg} />} />
         <Route path="/admin/obras/editar" element={<AdminArtworkFormPage logoImg={logoImg} />} />

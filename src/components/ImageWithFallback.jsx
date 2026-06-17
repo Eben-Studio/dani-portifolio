@@ -7,6 +7,7 @@ const ImageWithFallback = forwardRef(function ImageWithFallback(
     className,
     fallbackClassName,
     fallbackText = '',
+    fallbackContent = null,
     fallbackSrc = '',
     onClick = null
   },
@@ -24,7 +25,11 @@ const ImageWithFallback = forwardRef(function ImageWithFallback(
   const currentSrc = failedPrimary && fallbackSrc ? fallbackSrc : resolvedSrc
 
   if (!resolvedSrc || (failedPrimary && (!fallbackSrc || failedFallback))) {
-    return <div aria-hidden="true" className={fallbackClassName}>{fallbackText}</div>
+    return (
+      <div aria-hidden="true" className={fallbackClassName}>
+        {fallbackContent || fallbackText}
+      </div>
+    )
   }
 
   return (
